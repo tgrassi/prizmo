@@ -68,7 +68,7 @@ energy_min = min(args.energy_minmax) * ev2erg
 energy_max = max(args.energy_minmax) * ev2erg
 amin = min(args.dust_minmax)
 amax = max(args.dust_minmax)
-refInd_file = args.redInd_file
+refInd_file = args.refInd_file
 plotOn = args.plot
 
 def parse_input_file(fname):
