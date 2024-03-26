@@ -1,0 +1,13 @@
+H + E -> H+ + E + E                      [] 2.910000e-08 * 1e0 / (2.320000e-01 + 1.360000e+01 * invTe) * 2.767452e+00 * invTe**(0.39) * exp(-13.60 * invTe)
+H+ + E -> H                              [] 1.416215e-10 * invsqrTgas / ((1e0 + 5.636151e-01 * sqrTgas)**(0.25) * (1e0 + 1.192167e-03 * sqrTgas)**(1.75))
+H2 + E -> H + H + E                      [] 3.22e-09 * Tgas32**(0.35) * exp(-102000.0*invTgas)
+H + H2 -> H + H + H                      [] 4.67e-07 * invTgas32 * exp(-55000.0*invTgas)
+H + H + H -> H2 + H                      [] 5.5d-29 / Tgas
+H + H + H2 -> H2 + H2                    [] 5.5d-29 / Tgas / 8d0
+H2 + H2 -> H2 + H + H                    [] 1.00e-08 * exp(-84100.0*invTgas)
+#H + H -> H+ + E + H                      [] QQQQQQ
+H + H -> H2                              [] 2.121e-17 * d2g / 1d-2
+
+H -> H+ + E                              [] PHOTO, 13.60
+H2 -> H + H                              [] PHOTO, 1e99
+

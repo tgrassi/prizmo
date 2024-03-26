@@ -1,0 +1,311 @@
+##################
+# cooling function for several species (especially metals)
+
+# define shortcuts for excitation rates
+@var:T2 = Tgas*1d-2
+@var:T4 = Tgas*1d-4
+@var:invTgas = 1d0/Tgas
+@var:lnT = log(Tgas)
+@var:lnT4 = log(Tgas*1d-4)
+
+# it does anything
+# @TgasUpperLimit:1d4
+
+##############
+#CARBON
+metal:C
+#level n: energy (K), degeneracy g, term
+level: 0, 0.e0, 1, 3P0
+level: 1, 23.6199, 3, 3P1
+level: 2, 62.4621, 5, 3P2
+#level: 3, 14664.9, 5, 1D2
+#level: 4, 31146.0, 1, 1S0
+
+#Aij (1/s), NIST
+1 -> 0, 7.93d-8
+2 -> 0, 1.72d-14
+2 -> 1, 2.65d-7
+#3 -> 0, 5.9d-8
+#3 -> 1, 7.3d-5
+#3 -> 2, 2.2d-4
+#4 -> 0, 0.d0
+#4 -> 1, 2.3d-3
+#4 -> 2, 2.2d-5
+#4 -> 3, 6.0d-1
+
+# Draine Book (2011), Tab.F6
+H, 1, 0, 1.26d-10*T2**(0.115+0.057*log(T2))
+H, 2, 0, 2.64d-10*T2**(0.231+0.046*log(T2))
+H, 2, 1, 8.90d-11*T2**(0.228+0.046*log(T2))
+
+# Draine Book (2011), Tab.F6
+H2or, 1, 0, 0.71d-10*T2**(-0.004+0.049*log(T2))
+H2or, 2, 0, 0.69d-10*T2**(0.169+0.038*log(T2))
+H2or, 2, 1, 1.48d-10*T2**(0.263+0.031*log(T2))
+
+H2pa, 1, 0, 0.67d-10*T2**(-0.085+0.102*log(T2))
+H2pa, 2, 0, 0.86d-10*T2**(-0.010+0.048*log(T2))
+H2pa, 2, 1, 1.75d-10*T2**(0.072+0.064*log(T2))
+
+# Glover+Jappsen (2007), https://ui.adsabs.harvard.edu/abs/2007ApJ...666....1G/abstract
+H+, 1, 0, (9.6d-11 -1.8d-14*Tgas +1.9d-18*Tgas**2) *Tgas**(.45)
+       if(Tgas > 5d3): 8.9d-10*Tgas**(.117)
+H+, 2, 0, (3.1d-12 -6.d-16*Tgas +3.9d-20*Tgas**2) *Tgas
+       if(Tgas > 5d3): 2.3d-9*Tgas**(.0965)
+H+, 2, 1, (1.d-10 -2.2d-14*Tgas +1.7d-18*Tgas**2) *Tgas**(.70)
+       if(Tgas > 5d3): 9.2d-9*Tgas**(.0535)
+
+# Glover+Jappsen (2007), https://ui.adsabs.harvard.edu/abs/2007ApJ...666....1G/abstract, assumed constant above 2000K
+E, 1, 0, 1e1**(-7.593177e-03*log10(Tgas)**4 - 1.300519e-02*log10(Tgas)**3 + 4.361089e-01*log10(Tgas)**2 - 5.545468e-01*log10(Tgas)**1 - 9.960396e+00*log10(Tgas)**0)
+    if(Tgas > 2e4): 1.226893e-08
+E, 2, 0, 1e1**(-5.211205e-02*log10(Tgas)**4 + 4.719755e-01*log10(Tgas)**3 - 1.322936e+00*log10(Tgas)**2 + 1.622322e+00*log10(Tgas)**1 - 1.054659e+01*log10(Tgas)**0)
+    if(Tgas > 2e4): 4.758236e-09
+E, 2, 1,1e1**(-3.699186e-02*log10(Tgas)**4 + 3.006453e-01*log10(Tgas)**3 - 6.636761e-01*log10(Tgas)**2 + 7.127031e-01*log10(Tgas)**1 - 9.748391e+00*log10(Tgas)**0)
+    if(Tgas > 2e4): 2.001688e-08
+
+# Collisional excitation for electrons involving levels 3 & 4 could be taken from https://ui.adsabs.harvard.edu/abs/1976A%26A....50..141P/abstract but they don't distinguish between levels 0,1,2 - usual way to do this seems to be by dividing in a ratio of degeneracy.
+
+endmetal
+
+
+##############
+#SILICON I
+metal:Si
+#level n: energy (K), degeneracy g
+level: 0, 0.e0, 1
+level: 1, 110.e0, 3
+level: 2, 320.e0, 5
+
+#Aij
+1 -> 0, 8.4d-6
+2 -> 0, 2.4d-10
+2 -> 1, 4.2d-5
+
+H, 1, 0, 3.5d-10*(T2)**(-.03)
+H, 2, 0, 1.7d-11*(T2)**(.17)
+H, 2, 1, 5.d-10*(T2)**(.17)
+
+H+, 1, 0, 7.2d-9
+H+, 2, 0, 7.2d-9
+H+, 2, 1, 2.2d-8
+
+endmetal
+
+
+##############
+#IRON I
+metal:Fe
+#level n: energy (K), degeneracy g
+level: 0, 0.e0, 9
+level: 1, 598.43e0, 7
+level: 2, 1012.9e0, 5
+level: 3, 9968.2e0, 11
+level: 4, 10613.5e0, 9
+
+#Aij
+1 -> 0, 2.5d-3
+2 -> 0, 1.d-9
+2 -> 1, 1.6d-3
+3 -> 0, 2.d-3
+4 -> 0, 1.5d-3
+4 -> 3, 3.6d-3
+
+H, 1, 0, 8.d-10*(T2)**(.17)
+H, 2, 0, 6.9d-10*(T2)**(.17)
+H, 2, 1, 5.3d-10*(T2)**(.17)
+
+E, 1, 0, 1.2d-7
+E, 2, 0, 1.2d-7
+E, 2, 1, 9.3d-8
+E, 3, 0, 2.d-7*(Tgas/1.d4)**(.57)
+E, 4, 0, 1.d-7*(Tgas/1.d4)**(.57)
+E, 4, 3, 1.5d-7
+
+endmetal
+
+
+##############
+#OXYGEN I
+metal:O
+#level n: energy (K), degeneracy g, term
+level: 0, 0.e0, 5, 3P2
+level: 1, 227.709, 3, 3P1
+level: 2, 326.570, 1, 3P0
+level: 3, 22830.327, 5, 1D2
+level: 4, 48620.016, 1, 1S0
+
+#Aij (1/s), NIST
+1 -> 0, 8.91d-5
+2 -> 0, 1.34d-10
+2 -> 1, 1.75d-5
+3 -> 0, 5.63d-3
+3 -> 1, 1.82d-3
+3 -> 2, 8.60d-7
+4 -> 0, 2.42d-4
+4 -> 1, 7.54d-2
+4 -> 2, 0.d0
+4 -> 3, 1.26d0
+
+# Improved fits to Lique+2018, https://ui.adsabs.harvard.edu/abs/2018MNRAS.474.2313L/abstract, https://home.strw.leidenuniv.nl/~moldata/datafiles/oatom@lique.dat
+H, 1, 0, 1.37d-10*T2**(0.348+0.018*log(T2))+2.96d-10*expinvT2**(-3.77)
+H, 2, 0, 1.03d-10*T2**(0.304+0.033*log(T2))+3.08d-10*expinvT2**(-5.18)
+H, 2, 1, 1.19d-10*T2**(0.160+0.072*log(T2))+5.03d-10*expinvT2**(-18.9)
+# Draine Book (2011), Tab.F6 fits to Krems+2006, https://ui.adsabs.harvard.edu/abs/2006ApJ...647.1531K/abstract
+H, 3, 0, 6.05d-13*T4**(-0.045 - 0.078*log(T4))
+H, 3, 1, 3.63d-13*T4**(-0.045 - 0.078*log(T4))
+H, 3, 2, 1.21d-13*T4**(-0.045 - 0.078*log(T4))
+
+# Improved fits to Lique+2018, https://ui.adsabs.harvard.edu/abs/2018MNRAS.474.2313L/abstract, https://home.strw.leidenuniv.nl/~moldata/datafiles/oatom@lique.dat
+H2or, 1, 0, 1.84d-10*T2**(0.215+0.022*log(T2))+1.54d-10*expinvT2**(-8.13)
+H2or, 2, 0, 1.23d-10*T2**(0.355+0.012*log(T2))+1.88d-10*expinvT2**(-19.1)
+H2or, 2, 1, 4.72d-12*T2**(0.393+0.038*log(T2))+2.30d-11*expinvT2**(-29.3)
+
+H2pa, 1, 0, 1.70d-10*T2**(0.221+0.022*log(T2))-4.29d-11*expinvT2**(-1.63)
+H2pa, 2, 0, 4.46d-13*T2**(2.596-0.235*log(T2))+1.54d-10*expinvT2**(-0.0757)
+H2pa, 2, 1, 7.19d-13*T2**(0.624+0.051*log(T2))+3.38d-11*expinvT2**(-36.2)
+
+# Glover+Jappsen (2007), https://ui.adsabs.harvard.edu/abs/2007ApJ...666....1G/abstract
+H+, 1, 0, 6.38d-11*Tgas**(.4)
+	if(Tgas > 194.): 7.75d-12*Tgas**(.8)
+	if(Tgas > 3686.): 2.65d-10*Tgas**(.37)
+H+, 2, 0, 6.1d-13*Tgas**(1.1)
+	if(Tgas > 511.): 2.12d-12*Tgas**(.9)
+	if(Tgas > 7510.): 4.49d-10*Tgas**(.3)
+H+, 2, 1, 2.03d-11*Tgas**(.56)
+	if(Tgas > 2090.): 3.43d-10*Tgas**(.19)
+
+# Draine Book (2011), Tab.F3; fits to Bell et al. (1998) within 3P and Pequignot (1990) for rest
+Es, 1, 0, 0.01050*T4**(0.4861 + 0.0054*lnT4)
+Es, 2, 0, 0.00459*T4**(0.4507 - 0.0066*lnT4)
+Es, 2, 1, 0.00015*T4**(0.4709 - 0.1396*lnT4)
+Es, 3, 0, 0.2380*T4**1.43 / (1d0 + 0.605*T4**1.105)
+Es, 3, 1, 0.1428*T4**1.43 / (1d0 + 0.605*T4**1.105)
+Es, 3, 2, 0.0476*T4**1.43 / (1d0 + 0.605*T4**1.105)
+Es, 4, 0, 0.03265*T4**1.5 / (1d0 + 0.8*T4**1.125)
+Es, 4, 1, 0.01959*T4**1.5 / (1d0 + 0.8*T4**1.125)
+Es, 4, 2, 0.00653*T4**1.5 / (1d0 + 0.8*T4**1.125)
+Es, 4, 3, 0.116*T4**0.54 / (1d0 + 0.111*T4**0.16)
+
+endmetal
+
+
+##############
+#CARBON II
+metal:C+
+#level n: energy (K), degeneracy g, term
+level: 0, 0.e0, 2, 2P0.5
+level: 1, 91.211, 4, 2P1.5
+#level: 2, 61871.3, 2, 4P0.5
+#level: 3, 61903.1, 4, 4P1.5
+#level: 4, 61943.8, 6, 4P2.5
+
+#Aij (1/s), NIST
+1 -> 0, 2.29d-6
+#2 -> 0, 5.99d1
+#2 -> 1, 6.78d1
+#3 -> 0, 1.40d0
+#3 -> 1, 8.47d0
+#3 -> 2, 0.d0
+#4 -> 0, 0.d0
+#4 -> 1, 4.43d1
+#4 -> 2, 0.d0
+#4 -> 3, 0.d0
+
+# Draine Book (2011), Tab.F1
+Es, 1, 0, (1.55+1.25*T4)/(1+0.35*T4**1.25)
+# Draine Book (2011), Tab.F6
+H, 1, 0, 7.58e-10*T2**(0.128+0.009*log(T2))
+H2pa, 1, 0, 4.25e-10*T2**(0.124-0.018*log(T2))
+H2or, 1, 0, 5.14e-10*T2**(0.095+0.023*log(T2))
+
+# Collisional excitation for electrons involving levels 2, 3 & 4 could be taken from https://ui.adsabs.harvard.edu/abs/1992ApJS...80..425B/abstract but would need fitting as tabulated at different T
+
+endmetal
+
+
+##############
+#OXYGEN II
+metal:O+
+#level n: energy (K), degeneracy g, term
+level: 0, 0.e0, 4, 4S1.5
+level: 1, 38574.4e0, 6, 2D2.5
+level: 2, 38603.2e0, 4, 2D1.5
+level: 3, 58224.3e0, 4, 2P1.5
+level: 4, 58227.2e0, 2, 2P0.5
+
+#Aij (1/s), NIST
+1 -> 0, 3.06d-5
+2 -> 0, 1.78d-4
+2 -> 1, 1.30d-7
+3 -> 0, 5.22d-2
+3 -> 1, 9.91d-2
+3 -> 2, 5.34d-2
+4 -> 0, 2.12d-2
+4 -> 1, 5.19d-2
+4 -> 2, 8.67d-2
+4 -> 3, 0.d0
+
+# Draine Book (2011), Tab.F4
+Es, 1, 0, 0.803*T4**(0.023-0.008*lnT4)
+Es, 2, 0, 0.550*T4**(0.054-0.004*lnT4)
+Es, 2, 1, 1.434*T4**(-0.176+0.004*lnT4)
+Es, 3, 0, 0.140*T4**(0.025-0.006*lnT4)
+Es, 4, 0, 0.283*T4**(0.023-0.004*lnT4)
+Es, 3, 1, 0.349*T4**(0.060+0.052*lnT4)
+Es, 4, 1, 0.832*T4**(0.076+0.055*lnT4)
+Es, 3, 2, 0.326*T4**(0.063+0.052*lnT4)
+Es, 4, 2, 0.485*T4**(0.059+0.052*lnT4)
+Es, 4, 3, 0.322*T4**(0.019+0.037*lnT4)
+
+endmetal
+
+
+##############
+#SILICON II
+metal:Si+
+#level n: energy (K), degeneracy g
+level: 0, 0.e0, 2
+level: 1, 413.6e0, 4
+
+#Aij
+1 -> 0, 2.1d-4
+
+E, 1, 0, 1.7d-6*(T2)**(-.5)
+
+H, 1, 0, 8d-10*(T2)**(-.07)
+
+
+endmetal
+
+
+##############
+#IRON II
+metal:Fe+
+#level n: energy (K), degeneracy g
+level: 0, 0.e0, 10
+level: 1, 553.58e0, 8
+level: 2, 960.59e0, 6
+level: 3, 1241.16, 4
+level: 4, 1405.76, 2
+
+#Aij
+1 -> 0, 2.13d-3
+2 -> 1, 1.57d-3
+3 -> 2, 7.18d-4
+4 -> 3, 1.88d-4
+2 -> 0, 1.50d-9
+
+H, 1, 0, 9.5d-10
+H, 2, 1, 4.7d-10
+H, 3, 2, 5.0d-10
+H, 4, 3, 5.0d-10
+H, 2, 0, 5.7d-10
+
+E, 1, 0, 1.8d-6*(T2)**(-.5)
+E, 2, 1, 8.7d-7*(T2)**(-.5)
+E, 3, 2, 1.d-5*Tgas**(-.5)
+E, 4, 3, 1.d-5*Tgas**(-.5)
+E, 2, 0, 1.8d-6*(T2)**(-.5)
+
+endmetal
+

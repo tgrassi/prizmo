@@ -1,0 +1,27 @@
+# photochemistry needs energy threshold
+#H -> H+ + E ; PHOTO,  13.59844
+H+ + E -> H ; 2.36e-12 * (Tgas / 3d2)**(-0.64)
+
+
+C -> C+ + E ; PHOTO, 11.2603
+C+ + E -> C ; 4.67e-12 * Tgas32**(-0.6)
+
+O -> O+ + E ; PHOTO, 13.6181
+O+ + E -> O ; 3.4e-12 * Tgas32**(-0.63)
+
+H + H -> H2 ; 2.121e-17
+H2 -> H + H ; PHOTO, 1e99
+
+H -> H+ + E ; user_cr * 0.46
+H2 -> H+ + H + E ; user_cr * 0.02
+H2 -> H + H ; user_cr * 0.1
+
+He+ + E -> He ; 2.36e-12 * Tgas32**(-0.64)
+He -> He+ + E ; user_cr * 0.5
+
+
+CO -> C + O ; PHOTO, 1e99
+
+C+ + H2 -> CH2+ ; 4d-16 * Tgas32**(-0.2)
+CH2+ + E -> CH + H ; 1.6d-7 * Tgas32**(-0.6)
+CH + O -> CO + H ;  6.6d-11

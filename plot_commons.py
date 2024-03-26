@@ -1,0 +1,1 @@
+species_names = ["C", "CH", "CH2", "CH2+", "CH3", "CH3+", "CH4", "CH4+", "CH5+", "CH+", "CO", "CO_DUST", "CO+", "C+", "E", "H", "H2", "H2O", "H2O_DUST", "H2O+", "H2+", "H3O+", "H3+", "HCO+", "He", "He+", "H+", "O", "O2", "O2+", "OH", "OH+", "O+"]

@@ -1,0 +1,6 @@
+# NOTE: verbatim (e.g. H + H2 -> H + H + H) should be exaclty the same as in the network
+# energy in eV, positive is heating
+H + H2 -> H + H + H    ; -4.48
+H2 + H2 -> H2 + H + H  ; -4.48
+H + H -> H2            ;  4.20
+
