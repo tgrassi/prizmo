@@ -56,7 +56,7 @@ parser.add_argument("--radiation_type", "-r", type=str, default=radiation_type, 
 parser.add_argument("--nphoto", "-n", type=int, default=nphoto, help='Specify the number of photobins (default: {})'.format(nphoto))
 parser.add_argument("--energy_minmax", "-E", type=float, nargs='+', default=[energy_min/ev2erg, energy_max/ev2erg], help='Specify the maximum and minimum energies (default: {})'.format([energy_min/ev2erg, energy_max/ev2erg]))
 parser.add_argument("--dust_minmax", "-d", type=float, nargs='+', default=[amin, amax], help='Specify the maximum and minimum dust grain sizes (default: {})'.format([amin,amax]))
-parser.add_argument("--refInd_file", "-e", type=str, default=refInd_file, help='Specify the refactory index file (default: {})'.format(redInd_file))
+parser.add_argument("--refInd_file", "-e", type=str, default=refInd_file, help='Specify the refactory index file (default: {})'.format(refInd_file))
 parser.add_argument("--plot", "-p", action='store_true', help='Show plots produced by each stage')
 args = parser.parse_args()
 input_file = args.input
