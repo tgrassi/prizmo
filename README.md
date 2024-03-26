@@ -1,5 +1,27 @@
 # PRIZMO
-## Preprocess
+- PRIZMO is a library-like code to advance time-dependetly chemistry and temperature of a protoplanetary disk (M)HD simulation.
+- It preprocesses the input information to write optimized FORTRAN code.
+- It has a C interface that allows it to be coupled with codes like PLUTO.
+- The earlier code is described in [https://arxiv.org/abs/2004.04748] (Grassi et al. 2020)
+- The newer version is discussed in (Sellek et al. 2024, in prep)
+
+## Basic usage
+- Run the preprocessor
+```
+cd src_py
+python prizmo.py
+```
+- Compile the code
+```
+make
+```
+- Run the code
+```
+./test
+```
+
+
+## Preprocessor
 Preprocessing is needed:
 
 * After cloning this repository
@@ -15,8 +37,8 @@ python prizmo.py
 wait...
 
 ### Changing radiation or dust properties
-When you change radiation or dust properties it is recommended to delete the contents of the runtime_data folder!     
-This applies also if you experience weired behaviours during the runtime stage.  
+When you change radiation or dust properties, it is recommended that the contents of the runtime_data folder be deleted!     
+This also applies if you experience weird behaviors during the runtime stage.  
 
 
 ## Compile and run
@@ -30,21 +52,21 @@ make
 The compiler automatically searches for Intel Fortran, otherwise uses `gfortran`.    
 
 ### C
-The example test `main_c.c` evolves a single cell, and it is intentended to show how to call PRIZMO from C.
+The example test `main_c.c` evolves a single cell, and it is intended to show how to call PRIZMO from C.
 ```
 make cbind
 ./test
 ```
 
-### Knwon bugs/errors/warnings
+## Known bugs/errors/warnings
 #### Missing XUVTOP warning
-Ignore, unless you want to produce new cooling tables using CHIANTI.    
+Ignore it unless you want to produce new cooling tables using CHIANTI.    
 Download the latest CHIANTI release [https://www.chiantidatabase.org/chianti_download.html].     
 Export the path of where you unzipped the data (the folder containing the atom folders), e.g.
 ```
 export XUVTOP=~/chianti
 ```
-#### Early segmentaion fault    
+#### Early segmentation fault    
 Segmentation fault at the beginning when running `./test`.       
 PRIZMO uses large tables (especially atomic cooling), hence you need to increase the stack size to 
 ```
@@ -60,7 +82,7 @@ Warnings similar to this, but the code continues to run
 ```
 The solver is taking too many iterations to advance, but the solution is found anyway.    
 The cell is probably close to thermochemical equilibrium.     
-Ignore, if you don't have any clear strategy on how to improve the convergence (e.g. producing finer tables, changing tolerances). 
+Ignore, if you don't have any clear strategy on how to improve the convergence (e.g., producing finer tables, changing tolerances). 
 
 
 #### MAXSTEPS warning
