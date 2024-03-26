@@ -5,6 +5,8 @@
 - The earlier code is described in [https://arxiv.org/abs/2004.04748] (Grassi et al. 2020)
 - The newer version is discussed in (Sellek et al. 2024, in prep)
 
+![plot](./assets/disk.png)
+
 ## Basic usage
 - Run the preprocessor
 ```
