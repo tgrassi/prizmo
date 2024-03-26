@@ -54,16 +54,22 @@ parser.add_argument("--chemNet", "-c", type=str, default=chemNet, help='Specify 
 parser.add_argument("--atomData", "-a", type=str, default=atomData, help='Specify the atomic data file (default: {})'.format(atomData))
 parser.add_argument("--radiation_type", "-r", type=str, default=radiation_type, help='Specify the radiation type (default: {})'.format(radiation_type))
 parser.add_argument("--nphoto", "-n", type=int, default=nphoto, help='Specify the number of photobins (default: {})'.format(nphoto))
+parser.add_argument("--energy_minmax", "-E", type=float, nargs='+', default=[energy_min/ev2erg, energy_max/ev2erg], help='Specify the maximum and minimum energies (default: {})'.format([energy_min/ev2erg, energy_max/ev2erg]))
+parser.add_argument("--dust_minmax", "-d", type=float, nargs='+', default=[amin, amax], help='Specify the maximum and minimum dust grain sizes (default: {})'.format([amin,amax]))
+parser.add_argument("--refInd_file", "-e", type=str, default=refInd_file, help='Specify the refactory index file (default: {})'.format(redInd_file))
 parser.add_argument("--plot", "-p", action='store_true', help='Show plots produced by each stage')
-parser.add_argument("--energy_minmax", "-E", type=float, nargs='+', default=[energy_min/ev2erg, energy_max/ev2erg], help='Specify the radiation type (default: {})'.format([energy_min/ev2erg, energy_max/ev2erg]))
 args = parser.parse_args()
+input_file = args.input
 chemNet = args.chemNet
 atomData = args.atomData
 radiation_type = args.radiation_type
-plotOn = args.plot
+nphoto = args.nphoto
 energy_min = min(args.energy_minmax) * ev2erg
 energy_max = max(args.energy_minmax) * ev2erg
-input_file = args.input
+amin = min(args.dust_minmax)
+amax = max(args.dust_minmax)
+refInd_file = args.redInd_file
+plotOn = args.plot
 
 def parse_input_file(fname):
     opts = dict()
@@ -80,6 +86,10 @@ def parse_input_file(fname):
             energy_min, energy_max = [float(x) for x in val.replace(",", " ").split()]
             opts[energy_min] = energy_min * ev2erg
             opts[energy_max] = energy_max * ev2erg
+        elif key == "dust_minmax":
+            amin, amax = [float(x) for x in val.replace(",", " ").split()]
+            opts[amin] = amin
+            opts[amax] = amax
         elif key == "nphoto":
             val = int(val)
 
