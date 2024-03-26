@@ -13,6 +13,7 @@ python prizmo.py
 ```
 - Compile the code
 ```
+cd ..
 make
 ```
 - Run the code
