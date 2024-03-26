@@ -37,10 +37,19 @@ python prizmo.py
 ```
 wait...
 
-### Changing radiation or dust properties
-When you change radiation or dust properties, it is recommended that the contents of the runtime_data folder be deleted!     
-This also applies if you experience weird behaviors during the runtime stage.  
+### Changing preprocessor inputs (e.g. radiation or dust properties)
+PRIZMO's preprocessor has default values for many choices. However, these can be configured by the user either by passing an input file with the flag -i (see test.ini for an example), or by setting any of the following command line arguments directly:
+* chemNet - the chemical network specified as a list of reactions
+* atomData - the file containing the details of level energies and fits for the de-exciation rates for the atomic cooling
+* radiation_type - details of the spectrum to use
+* nphoto - the number of energy bins to use
+* energy_minmax - the minimum and maximum energies to use (eV)
+* dust_minmax - the minimum and maximum dust grain sizes to use (cm)
+* refInd_file - the file containing the refractive indices for the dust
+The command line arguments that were used are logged in a readme file in the runtime_data folder
 
+Note: When you change radiation or dust properties, it is recommended that the contents of the runtime_data folder be deleted!
+This also applies if you experience weird behaviors during the runtime stage.
 
 ## Compile and run
 ### Fortran
