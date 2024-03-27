@@ -42,10 +42,13 @@ energy_max = 1e4 * ev2erg
 # radiation grid spacing (excluded thresholds)
 photo_logspacing = True
 
-# radiation types are, "draine", "xdr", "BB@Tbb", "file@LX@X_lo-X_hi",
-# xdr loads radiation from data/spectra/xdr_spectrum.dat
-# file columns are: eV, eV/cm2/Hz/s
-radiation_type = "E09_spec.dat@2.04e30@3e2-1e4"
+# radiation types are, "draine", "xdr", "BB@Tbb", "file@[LX]@[X_lo-X_hi]",
+## xdr loads radiation from data/spectra/xdr_spectrum.dat
+## for a specified, file...
+### add noBB to not include an additional 5000K photospheric blackbody
+### add @LFUV[LFUV] to additionally include a 12000K accretion blackbody
+## file columns are: eV, eV/cm2/Hz/s
+radiation_type = "baspec_lx30.dat@2.04e30@5e2-5e3"
 
 # Get command line overwrites
 parser = argparse.ArgumentParser()
