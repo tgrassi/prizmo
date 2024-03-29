@@ -10,7 +10,7 @@ program test
   real*8::coola(nspecies), xpos, zpos, xpos_max, xpos_min, theta_min, theta_max, theta
   real*8::rold, ngas_old, hscale, rstar, gravity, mstar
   real::time_start, time_stop, tcpu(nt, nxpos), total_time
-  integer::i, it, ix, istep
+  integer::i, it, ix, istep, ierr
   character(len=10) :: sstep
 
   ! coordinates for the 2D disk are
@@ -183,7 +183,7 @@ program test
         !   print *, "eq"
         ! else
         ! end if
-        call prizmo_evolve(x, Tgas, jflux, dt)
+        call prizmo_evolve(x, Tgas, jflux, dt, 0, ierr)
         call cpu_time(time_stop)
         total_time = total_time + time_stop - time_start
         tcpu(it, ix) = tcpu(it, ix) + time_stop - time_start
@@ -201,17 +201,16 @@ program test
 
         !krate = prizmo_get_rates(x, Tgas, Tdust, jflux)
 
-        ! this is for output
-        ! Tdust = prizmo_get_tdust(x, Tgas, jflux)
-        ! cools = prizmo_get_cooling_array(x, Tgas, Tdust, jflux)
-        ! heats = prizmo_get_heating_array(x, Tgas, Tdust, jflux)
-        !
-        ! ! write output to file
-        ! write(23, '(99e17.8e3)') theta, r, Tgas, Tdust, x
-        ! write(24, '(99e17.8e3)') theta, r, Tgas, cools
-        ! write(25, '(99e17.8e3)') theta, r, Tgas, heats
-        ! write(26, '(99e17.8e3)') theta, r, Tgas, ngas, tcpu(it, ix), prizmo_get_chi_FUV()
-
+        !this is for output
+        Tdust = prizmo_get_tdust(x, Tgas, jflux)
+        cools = prizmo_get_cooling_array(x, Tgas, Tdust, jflux)
+        heats = prizmo_get_heating_array(x, Tgas, Tdust, jflux)
+                ! ! write output to file
+        write(23, '(99e17.8e3)') theta, r, Tgas, Tdust, x
+        write(24, '(99e17.8e3)') theta, r, Tgas, cools
+        write(25, '(99e17.8e3)') theta, r, Tgas, heat
+        write(26, '(99e17.8e3)') theta, r, Tgas, ngas, tcpu(it, ix)!, prizmo_get_chi_FUV()
+        
       end do
 
     end do
