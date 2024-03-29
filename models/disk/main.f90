@@ -208,9 +208,9 @@ program test
                 ! ! write output to file
         write(23, '(99e17.8e3)') theta, r, Tgas, Tdust, x
         write(24, '(99e17.8e3)') theta, r, Tgas, cools
-        write(25, '(99e17.8e3)') theta, r, Tgas, heat
+        write(25, '(99e17.8e3)') theta, r, Tgas, heats
         write(26, '(99e17.8e3)') theta, r, Tgas, ngas, tcpu(it, ix)!, prizmo_get_chi_FUV()
-        
+
       end do
 
     end do
