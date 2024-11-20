@@ -3,7 +3,7 @@
 - It preprocesses the input information to write optimized FORTRAN code.
 - It has a C interface that allows it to be coupled with codes like PLUTO.
 - The earlier code is described in [https://arxiv.org/abs/2004.04748] (Grassi et al. 2020)
-- The newer version is discussed in (Sellek et al. 2024, in prep)
+- The newer version is discussed in [https://arxiv.org/abs/2408.00848] (Sellek et al. 2024)
 
 ![plot](./assets/disk.png)
 
@@ -61,7 +61,7 @@ The first example is `main.f90`, it is written in FORTRAN and simulates a static
 make
 ./test
 ```
-The compiler automatically searches for Intel Fortran, otherwise uses `gfortran`.    
+The makefile automatically searches for Intel Fortran, otherwise uses `gfortran`.    
 
 ### C
 The example test `main_c.c` evolves a single cell, and it is intended to show how to call PRIZMO from C.
