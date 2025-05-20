@@ -31,11 +31,18 @@ pip install -r requirements.txt
 cd src_py
 python prizmo.py
 ```
+
+- Choose a model
+```
+cp models/disk/* .
+```
+
 - Compile the code
 ```
 cd ..
 make
 ```
+
 - Run the code
 ```
 ./test
@@ -46,7 +53,7 @@ make
 Preprocessing is needed:
 
 * After cloning this repository
-* When changing chemistry (i.e. chemical network)
+* When changing chemistry (i.e., changing chemical network)
 * After changing data in the `data` folder
 * When changing dust or radiation parameters in `src_py/prizmo_commons.py`
 
