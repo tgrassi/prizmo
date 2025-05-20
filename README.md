@@ -30,6 +30,7 @@ pip install -r requirements.txt
 ```
 cd src_py
 python prizmo.py
+cd ..
 ```
 
 - Choose a model
@@ -39,7 +40,6 @@ cp models/disk/* .
 
 - Compile the code
 ```
-cd ..
 make
 ```
 
@@ -64,7 +64,7 @@ python prizmo.py
 ```
 wait...
 
-### Changing preprocessor inputs (e.g. radiation or dust properties)
+### How to change the preprocessor inputs (e.g., radiation, dust properties, ...)
 PRIZMO's preprocessor has default values for many choices. However, these can be configured by the user either by passing an input file with the flag -i (see test.ini for an example), or by setting any of the following command line arguments directly:
 * chemNet - the chemical network specified as a list of reactions
 * atomData - the file containing the details of level energies and fits for the de-exciation rates for the atomic cooling
@@ -86,13 +86,15 @@ The first example is `main.f90`, it is written in FORTRAN and simulates a static
 make
 ./test
 ```
-The makefile automatically searches for Intel Fortran, otherwise uses `gfortran`.    
+The makefile automatically searches for Intel Fortran, otherwise uses `gfortran` (not tested).    
 
 ### C
-The example test `main_c.c` evolves a single cell, and it is intended to show how to call PRIZMO from C.
+The example test `models/cbind/main_c.c` evolves a single cell, and it is intended to show how to call PRIZMO from C.
 ```
+cp models/cbind/* .
 make cbind
 ./test
+python plot.py
 ```
 
 ## Known bugs/errors/warnings
