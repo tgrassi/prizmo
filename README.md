@@ -7,7 +7,7 @@
 
 ![plot](./assets/disk.png)
 
-## Basic usage
+## Quickstart
 - Clone the repository
 ```
 git clone git@github.com:tgrassi/prizmo.git
