@@ -1,5 +1,5 @@
 # PRIZMO
-- PRIZMO is a library-like code to advance time-dependetly chemistry and temperature of a protoplanetary disk (M)HD simulation.
+- PRIZMO is a library-like code to advance time-dependent chemistry and temperature of a protoplanetary disk (M)HD simulation.
 - It preprocesses the input information to write optimized FORTRAN code.
 - It has a C interface that allows it to be coupled with codes like PLUTO.
 - The earlier code is described in [https://arxiv.org/abs/2004.04748] (Grassi et al. 2020)
@@ -125,7 +125,7 @@ Warnings similar to this, but the code continues to run
 ```
 The solver is taking too many iterations to advance, but the solution is found anyway.    
 The cell is probably close to thermochemical equilibrium.     
-Ignore, if you don't have any clear strategy on how to improve the convergence (e.g., producing finer tables, changing tolerances). 
+Ignore it if you don't have any clear strategy on how to improve the convergence (e.g., producing finer tables, changing tolerances). 
 
 
 #### MAXSTEPS warning
