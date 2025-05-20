@@ -4,9 +4,9 @@ exe = test
 -include Makefile_pragmas
 
 # test if ifort is present
-wres = $(shell which ifort > /dev/null; echo $$?)
+wres = $(shell which ifx > /dev/null; echo $$?)
 ifeq "$(wres)" "0"
-	fc = ifort
+	fc = ifx
 	switchOPT = -O3 -g -traceback -xHost -fp-model=precise -fpp
 	#switchOPT += -no-prec-sqrt
 	switchDBG = -O0 -check all -warn all -fpp -save-temps
@@ -16,8 +16,8 @@ ifeq "$(wres)" "0"
 	nowarn = -nowarn
 else
 	fc = gfortran
-	switchOPT = -ffree-line-length-none -O3 -g
-	switchDBG = -fbacktrace -g
+	switchOPT = -ffree-line-length-none -O3 -g -fallow-argument-mismatch
+	switchDBG = -fbacktrace -g -fallow-argument-mismatch
 	switchDBG += -ffpe-trap=zero,overflow,invalid
 	switchDBG += -fbounds-check -ffree-line-length-none -O0
 	nowarn = -w
