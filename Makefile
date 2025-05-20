@@ -23,10 +23,10 @@ else
 	nowarn = -w
 endif
 
-# test if icc is present
-wres_c = $(shell which icc > /dev/null; echo $$?)
+# test if icx is present
+wres_c = $(shell which icx > /dev/null; echo $$?)
 ifeq "$(wres_c)" "0"
-	cc = icc
+	cc = icx
 	switchCLIB = -lifcore -limf -lsvml -lintlc -ldl
 	switchCDBG = -O0
 	cswitch =
