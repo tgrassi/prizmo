@@ -4,7 +4,7 @@ program test
   real*8::rstar, r, dt, spy, dr, au2cm, t, ngas, N2Av, Av
   real*8::rad_Ncol_H2, rad_Ncol_CO
   real*8::cools(5), heats(4), energy_ev(prizmo_nphoto), Jscale, krate(prizmo_nreactions)
-  integer::i
+  integer::i, ierr
 
   N2Av = 6.289d-22
   spy = 365 * 3600 * 24.
@@ -51,7 +51,7 @@ program test
     call prizmo_set_radial_Ncol_H2(rad_Ncol_H2)
     call prizmo_set_radial_Ncol_CO(rad_Ncol_CO)
     call prizmo_set_vertical_Ncol_CO(rad_Ncol_CO)
-    call prizmo_evolve(x, Tgas, jflux, dt)
+    call prizmo_evolve(x, Tgas, jflux, dt, 0, ierr)
     call prizmo_rt(x, Tgas, jflux, dr)
 
     Tdust = prizmo_get_tdust(x, Tgas, jflux)
