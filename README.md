@@ -67,7 +67,7 @@ wait...
 ### How to change the preprocessor inputs (e.g., radiation, dust properties, ...)
 PRIZMO's preprocessor has default values for many choices. However, these can be configured by the user either by passing an input file with the flag -i (see test.ini for an example), or by setting any of the following command line arguments directly:
 * chemNet - the chemical network specified as a list of reactions
-* atomData - the file containing the details of level energies and fits for the de-exciation rates for the atomic cooling
+* atomData - the file containing the details of level energies and fits for the de-excitation rates for the atomic cooling
 * radiation_type - details of the spectrum to use
 * nphoto - the number of energy bins to use
 * energy_minmax - the minimum and maximum energies to use (eV)
@@ -79,16 +79,18 @@ Note: When you change radiation or dust properties, it is recommended that the c
 This also applies if you experience weird behaviors during the runtime stage.
 
 ## Compile and run
-### Fortran
-The first example is `main.f90`, it is written in FORTRAN and simulates a static disk    
+### Call from Fortran
+The example `models/disk/main.f90` is written in FORTRAN and simulates a static disk.    
 
 ```
+cp models/disk/* .
 make
 ./test
+python plot.py 1
 ```
-The makefile automatically searches for Intel Fortran, otherwise uses `gfortran` (not tested).    
+The makefile automatically searches for the Intel Fortran compiler (ifx), otherwise uses `gfortran` (not tested).    
 
-### C
+### Call from C
 The example test `models/cbind/main_c.c` evolves a single cell, and it is intended to show how to call PRIZMO from C.
 ```
 cp models/cbind/* .
@@ -96,6 +98,8 @@ make cbind
 ./test
 python plot.py
 ```
+The makefile automatically searches for Intel Fortran (ifx) and C (icx) compilers.    
+
 
 ## Known bugs/errors/warnings
 #### Missing XUVTOP warning
