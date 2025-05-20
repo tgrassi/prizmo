@@ -8,6 +8,19 @@
 ![plot](./assets/disk.png)
 
 ## Basic usage
+- Clone the repository
+```
+git clone git@github.com:tgrassi/prizmo.git
+```
+
+- Create a virtual environment (optional, but suggested)
+```
+pip install virtualenv
+python -m venv env
+source env/bin/activate
+pip install -r requirements.txt
+```
+
 - Run the preprocessor
 ```
 cd src_py
