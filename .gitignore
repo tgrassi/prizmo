@@ -16,6 +16,8 @@ env/
 plot*.py
 main.f90
 test
+main_c.c
+output.dat
 
 
 # Node artifact files
