@@ -179,6 +179,9 @@ def bhmie_qabs(x, refrel):
 
     import miepython
     m = real(refrel) - 1j * imag(refrel)
-    qext, qsca, _, _ = miepython.mie(m, x)
+    try:
+        qext, qsca, _, _ = miepython.mie(m, x)
+    except:
+        qext, qsca, _, _ = miepython.efficiencies_mx(m, x)
     #s1, s2, qext, qsca, qback, gsca = bhmie(x, refrel, 10)
     return qext - qsca

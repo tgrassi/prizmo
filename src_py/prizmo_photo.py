@@ -5,7 +5,10 @@ from prizmo_preprocess import preprocess
 import numpy as np
 from glob import glob
 from scipy.interpolate import interp1d
-from scipy import integrate
+try:
+    from scipy.integrate import trapz
+except ImportError:
+    from scipy.integrate import trapezoid as trapz
 import sys
 
 # Calculates the cross-section according to Verner for outer and inner shells
@@ -160,7 +163,7 @@ def find_energy(data_all, photo_limits):
     denergy = 1e-3 * ev2erg
     photo_limits = np.concatenate([photo_limits, photo_limits+denergy, photo_limits-denergy])
     photo_limits = np.array([x for x in photo_limits if emin < x < emax])
-    
+
     nphoto_left = nphoto - len(photo_limits) - (fuv_energy1>emin) - (fuv_energy2>emin)
     if photo_logspacing:
         energy = np.logspace(np.log10(emin), np.log10(emax), nphoto_left)
@@ -247,8 +250,8 @@ def prepare_external_spec(energy, spectrum, L_X=1e30, X_lo=1e2, X_hi=1e4, rstar=
         else:
             F_interp = interp1d(np.log10(nuHz * hplanck_eV), np.log10(F_nu), bounds_error=False, fill_value=-np.inf)
             bfield = 1e1**F_interp(np.log10(energy * erg2ev))
-        X_band = (energy * erg2ev > X_lo) * (energy * erg2ev < X_hi)        
-        L_band = integrate.trapz(bfield[X_band], energy[X_band]/hplanck)
+        X_band = (energy * erg2ev > X_lo) * (energy * erg2ev < X_hi)
+        L_band = trapz(bfield[X_band], energy[X_band]/hplanck)
         Multiplier = L_X/L_band
         bfield *= Multiplier
         bfield /= (4*np.pi**2*rstar**2)
@@ -261,11 +264,11 @@ def prepare_external_spec(energy, spectrum, L_X=1e30, X_lo=1e2, X_hi=1e4, rstar=
         # Do all the normalisation
         F_interp = interp1d(np.log10(EkeV*1000), np.log10(F_nu), bounds_error=False, fill_value="extrapolate")
         bfield = 1e1**F_interp(np.log10(energy * erg2ev))
-        X_band = (energy * erg2ev > X_lo) * (energy * erg2ev < X_hi)        
-        L_band = integrate.trapz(bfield[X_band], energy[X_band]/hplanck)
+        X_band = (energy * erg2ev > X_lo) * (energy * erg2ev < X_hi)
+        L_band = trapz(bfield[X_band], energy[X_band]/hplanck)
         Multiplier = L_X/L_band
         bfield *= Multiplier
-        bfield /= (4*np.pi**2*rstar**2)        
+        bfield /= (4*np.pi**2*rstar**2)
     else:
         raise NotImplementedError("Spectrum units not recognised: should either be in erg/s/A(/cm^2/sr) or photon/s/keV(/cm^2)")
 
@@ -284,7 +287,7 @@ def prepare_external_spec(energy, spectrum, L_X=1e30, X_lo=1e2, X_hi=1e4, rstar=
 def compute_habing_flux(energy):
     field = get_draine_field(energy) * 4. * np.pi
     cond = (energy >= fuv_energy1) & (energy <= fuv_energy2)
-    hf = np.trapz(field[cond] / energy[cond], energy[cond])
+    hf = trapz(field[cond] / energy[cond], energy[cond])
 
     idx1 = np.argmin(np.abs(energy - fuv_energy1))+1
     idx2 = np.argmin(np.abs(energy - fuv_energy2))+1

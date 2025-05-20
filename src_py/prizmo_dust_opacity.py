@@ -6,7 +6,10 @@ from prizmo_commons import amin, amax, pslope, clight, hplanck, rho_bulk, erg2ev
 from prizmo_preprocess import preprocess
 from bhmie import bhmie_qabs
 from scipy.interpolate import interp1d
-
+try:
+    from scipy.integrate import trapz
+except ImportError:
+    from scipy.integrate import trapezoid as trapz
 
 def prepare(user_energy):
 
@@ -49,7 +52,7 @@ def prepare(user_energy):
         fa = np.zeros_like(arange)
         for j, a in enumerate(arange):
             fa[j] = np.pi * a**p2 * bhmie_qabs(2e0 * np.pi / wlen * a, complex(f_nref(wlen), f_kref(wlen)))
-        fk[i] = np.trapz(fa, arange) / anorm
+        fk[i] = trapz(fa, arange) / anorm
 
     kappa = compute_kabs_integral(user_energy, fk)
     print("kabs integral 912-1100 AA:", kappa)
@@ -65,7 +68,7 @@ def prepare(user_energy):
 
 def compute_kabs_integral(energy, fk):
     cond = (energy >= fuv_energy1) & (energy <= fuv_energy2)
-    kappaint = np.trapz(fk[cond], energy[cond]) / (fuv_energy2 - fuv_energy1)
+    kappaint = trapz(fk[cond], energy[cond]) / (fuv_energy2 - fuv_energy1)
 
     kabs_integral = "! kabs integral in FUV range\n"
     kabs_integral += "real*8,parameter::kabs_integral=%s" % ("%.18e" % kappaint).replace("e", "d")
