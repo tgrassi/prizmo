@@ -48,7 +48,7 @@ make
 ./test
 ```
 
-- Plot the results
+- Plot the results      
 Open another terminal while the code is running...     
 ```
 python plot_jobs.py 10
