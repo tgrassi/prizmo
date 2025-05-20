@@ -14,7 +14,7 @@ git clone git@github.com:tgrassi/prizmo.git
 cd prizmo
 ```
 
-- Create a virtual environment (optional, but suggested)
+- Create a virtual environment (optional, but recommended)
 ```
 pip install virtualenv
 python -m venv env
