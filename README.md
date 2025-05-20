@@ -19,6 +19,10 @@ cd prizmo
 pip install virtualenv
 python -m venv env
 source env/bin/activate
+```
+
+- Install requirements
+```
 pip install -r requirements.txt
 ```
 
