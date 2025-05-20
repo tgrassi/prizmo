@@ -11,6 +11,7 @@
 - Clone the repository
 ```
 git clone git@github.com:tgrassi/prizmo.git
+cd prizmo
 ```
 
 - Create a virtual environment (optional, but suggested)
