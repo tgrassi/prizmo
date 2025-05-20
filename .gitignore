@@ -3,7 +3,9 @@
 # Learn more about .gitignore:
 #     https://www.atlassian.com/git/tutorials/saving-changes/gitignore
 
-pluto_definitions.txt
+.txt
+
+runtime_data/
 
 # Node artifact files
 node_modules/
