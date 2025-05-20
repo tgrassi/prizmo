@@ -1,6 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from scipy.interpolate import interp2d
+from scipy.interpolate import RegularGridInterpolator as rgi
 from prizmo_commons import print_title, plotOn
 
 
@@ -84,13 +84,13 @@ def shielding_CO(nco=50, nh2=50):
 
     NCO = np.array(NCO)
     NH2 = np.array(NH2)
-    shield = np.array(shield).reshape((len(NH2), len(NCO))).T
-    f_shield = interp2d(np.log10(NH2), np.log10(NCO), np.log10(shield))
+    shield = np.array(shield).reshape((len(NH2), len(NCO)))
+    f_shield = rgi((np.log10(NH2), np.log10(NCO)), np.log10(shield))
 
     out = ""
     for xNCO in np.logspace(np.log10(NCO.min()), np.log10(NCO).max(), nco):
         for xNH2 in np.logspace(np.log10(NH2.min()), np.log10(NH2).max(), nh2):
-            out += "%.18e %.18e %.18e\n" % (xNCO, xNH2, 1e1**f_shield(np.log10(xNH2), np.log10(xNCO)) + 1e-40)
+            out += "%.18e %.18e %.18e\n" % (xNCO, xNH2, 1e1**f_shield((np.log10(xNH2), np.log10(xNCO) + 1e-40)))
 
     fh = open("../runtime_data/shielding_CO.dat", "w")
     fh.write(out)
