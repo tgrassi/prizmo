@@ -265,11 +265,11 @@ def prepare_xlevel(data, atom, nlevels, H2_inc, nt=10000):
                 else:
                     kname = "".join(["k"+str(i)+str(k) for k in range(nlevels) if k != i])
                 ffname = "../runtime_data/cool_%s_%s_%s.dat" % (atom, collider, kname)
+                vnames.append(kname)
                 if os.path.isfile(ffname):
                     print("skipping, cooling file found", ffname)
                     continue
                 fhk[j][i] = open(ffname, "w")
-                vnames.append(kname)
 
         fnames = ["\"runtime_data/cool_%s_%s_%s.dat\"" % (atom, collider, x) for x in vnames]
 
