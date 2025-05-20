@@ -4,8 +4,16 @@
 #     https://www.atlassian.com/git/tutorials/saving-changes/gitignore
 
 pluto_definitions.txt
-
 runtime_data/
+stdout_*.out
+stderr_*.out
+plot_*.png
+output_*.dat
+env/
+plot*.py
+main.f90
+test
+
 
 # Node artifact files
 node_modules/
@@ -55,4 +63,5 @@ Thumbs.db
 # Fortran files
 *.o
 *.mod
+
 
