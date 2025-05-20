@@ -48,6 +48,13 @@ make
 ./test
 ```
 
+- Plot the results
+Open another terminal while the code is running...     
+```
+python plot_jobs.py 10
+```
+where `10` is the number of processors you want to use for plotting.   
+It will create a set of PNG files for each time-step `plot_000000.png`, `plot_000001.png`, ...      
 
 ## Preprocessor
 Preprocessing is needed:
