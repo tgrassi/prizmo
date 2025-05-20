@@ -8,7 +8,10 @@ runtime_data/
 stdout_*.out
 stderr_*.out
 plot_*.png
+plot.png
 output_*.dat
+function_*.dat
+fort.*
 env/
 plot*.py
 main.f90
