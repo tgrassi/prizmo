@@ -1,11 +1,13 @@
 #include <stdio.h>
 #include <math.h>
 
-
 // interfaces
 extern void prizmo_init_c();
 extern void prizmo_evolve_c(double *, double *, double *, double *, int *, int *);
 extern void prizmo_rt_c(double *, double *, double *, double *);
+extern void prizmo_set_radial_ncol_h2_c(double *);
+extern void prizmo_set_radial_ncol_co_c(double *);
+extern void prizmo_get_tdust_c(double *, double *, double *, double *);
 
 #define NTRACER 33
 #define NPHOTO 1000
@@ -49,41 +51,55 @@ extern void prizmo_rt_c(double *, double *, double *, double *);
 #define nr 20
 #define ntheta 21
 
-int main (void){
+int main(void)
+{
+    // define variables
     double x[nr][ntheta][NTRACER] = {0e0};
     double ngas[nr][ntheta];
     double tgas[nr][ntheta];
-    double jflux[NPHOTO] = {0e0};
-    double dt, t, tend, r[nr], theta[ntheta], ds;
+    double tdust[nr][ntheta];
+    double jflux[NPHOTO];
+    double jflux0[NPHOTO];
+    double dt, t, r[nr], theta[ntheta], ds;
     int ierr, verb;
 
+    // constants
     double spy = 3.1536e7;
     double au2cm = 1.496e13;
-    double pmass = 1.67e-24; // g
-    double msun = 1.989e33; // g
-    double gravity = 6.67e-8; // cm^3/g/s^2
+    double pmass = 1.67e-24;        // g
+    double msun = 1.989e33;         // g
+    double rsun = 6.96e10;         // cm
+    double gravity = 6.67e-8;       // cm^3/g/s^2
     double kboltzmann = 1.3807e-16; // erg/K
 
-    tend = spy * 1e8;
+    // disk parameters
+    double rmin = 1e0 * au2cm; // min radius, cm
+    double rmax = 1e2 * au2cm; // max radius, cm
+    double tend = 1e4 * spy; // max integration time, s
+    double sigma0 = 1700.; // surface density at 1AU, g/cm^2
+    double tgas0 = 1e2;    // temperature at 1AU, K
+    double mass = msun;    // star mass, g
+    double rstar = rsun; // star radius, cm
+    double mu = 2.34;  // mean molecular weight, no units
+    double ngas_min = 1e-2; // min density, 1/cm^3
 
-    double rmin = 1e0 * au2cm;
-    double rmax = 1e2 * au2cm;
-    double sigma0 = 1700.; // g/cm^2
-    double tgas0 = 1e2; // K
-    double mass = msun; // g
-    double mu = 2.34;
-    double ngas_min = 1e-2; // 1/cm^3
-
+    // -----------------------------
+    // initialize prizmo
     prizmo_init_c();
 
-
+    // -----------------------------
     // Initialize the gas density and temperature
-    FILE *f = fopen("disk.dat", "w");
-    for(int i = 0; i < nr; i++){
-        r[i] = pow(1e1, log10(rmin) + (log10(rmax) - log10(rmin)) * i / (nr - 1));
+    // loop over radius
+    for (int i = 0; i < nr; i++)
+    {
+        // compute radius
+        r[i] = rmin + (rmax - rmin) * i / (nr - 1);
+        // compute orbital frequency
         double omega = sqrt(gravity * mass / pow(r[i], 3));
 
-        for(int j = 0; j < ntheta; j++){
+        // loop over theta (note theta=0 is the pole)
+        for (int j = 0; j < ntheta; j++)
+        {
             theta[j] = M_PI / 4.0 + M_PI / 4.0 * j / (ntheta - 1);
             tgas[i][j] = tgas0 * pow(r[i] / au2cm, -0.5);
             double cs = sqrt(kboltzmann * tgas[i][j] / mu / pmass);
@@ -92,71 +108,129 @@ int main (void){
             double z = r[i] * tan(M_PI / 2.0 - theta[j]);
             ngas[i][j] = ng / h / sqrt(2e0 * M_PI) * exp(-0.5 * pow(z / h, 2));
             ngas[i][j] = fmax(ngas[i][j], ngas_min);
-            fprintf(f, "%e %e %e %e %e\n", r[i], theta[j], z, ngas[i][j], tgas[i][j]);
         }
-        fprintf(f, "\n");
     }
-    fclose(f);
 
-
-    // Initialize the chemical abundances
-    for(int i = 0; i < nr; i++){
-        for(int j = 0; j < ntheta; j++){
+    // -----------------------------
+    // Initialize the chemical abundances all grid cells
+    // loop over radius
+    for (int i = 0; i < nr; i++)
+    {
+        // loop over theta (note theta=0 is the pole)
+        for (int j = 0; j < ntheta; j++)
+        {
+            // fractional abundances wrt total gas density
             x[i][j][IDX_CHEM_H2] = 1e0;
             x[i][j][IDX_CHEM_Cj] = 1e-4;
             x[i][j][IDX_CHEM_E] = 1e-4;
             x[i][j][IDX_CHEM_O] = 2e-4;
             x[i][j][IDX_CHEM_He] = 0.08;
-            for(int k = 0; k < NTRACER; k++){
+            // multiply by gas density to get number density, 1/cm^3
+            for (int k = 0; k < NTRACER; k++)
+            {
                 x[i][j][k] *= ngas[i][j];
             }
         }
     }
 
-    dt = spy * 1e3;
+    // -----------------------------
+    // Initialize the radiation field read from file
+    FILE *jflux_file = fopen("runtime_data/radiation_field.dat", "r");
+    char line[256];
+    int jflux_count = 0;
+    double num;
+    while (fgets(line, sizeof(line), jflux_file) != NULL)
+    {
+        sscanf(line, "%lf", &num);
+        jflux0[jflux_count] = num;
+        jflux_count++;
+    }
+    fclose(jflux_file);
+
+    // -----------------------------
+    // time integration
+    dt = spy;
+    t = 0e0;
     verb = 0;
+    ds = r[1] - r[0];  // cell size, cm
 
-    f = fopen("output.dat", "w");
 
-    for(int j = 0; j < ntheta; j++){
-        printf("%d %d\n", j, ntheta);
-        double rold = 0e0;
-        for(int i = 0; i < nr; i++){
-            prizmo_evolve_c(x[i][j], &tgas[i][j], jflux, &dt, &verb, &ierr);
-            double z = r[i] * tan(M_PI / 2.0 - theta[j]);
-            fprintf(f, "%e %e %e %e %e ", r[i], theta[j], z, ngas[i][j], tgas[i][j]);
-            for(int k = 0; k < NTRACER; k++){
-                fprintf(f, "%e ", x[i][j][k]);
+    // loop over time
+    do
+    {
+
+        // compute the time step
+        dt = fmin(dt * 1.5, tend - t);
+        t += dt;
+
+        // loop over radius
+        for (int j = 0; j < ntheta; j++)
+        {
+            double rold = rmin;
+            double ncol_h2 = 0e0;
+            double ncol_co = 0e0;
+
+            // initialize the flux to the star radiation field
+            for(int k=0; k<NPHOTO; k++)
+            {
+                jflux[k] = jflux0[k] * 4. * M_PI * M_PI * rstar * rstar / rmin / rmin;
             }
-            ds = r[i] - rold;
-            prizmo_rt_c(x[i][j], &tgas[i][j], jflux, &ds);
-            rold = r[i];
+
+            // loop over radius
+            for (int i = 0; i < nr; i++)
+            {
+                // print out the progress
+                printf("\r t=%.3f%%; theta=%.2f%%; r=%.2f%%;    ",
+                    1e2 * t / tend,
+                    1e2 * j / (ntheta - 1),
+                    1e2 * i / (nr - 1));
+
+                // compute geomeric dilution of the radiation field
+                for(int k=0; k<NPHOTO; k++)
+                {
+                    jflux[k] = jflux[i] * rold * rold / r[i] / r[i];
+                }
+
+                // set the column densities
+                prizmo_set_radial_ncol_h2_c(&ncol_h2);
+                prizmo_set_radial_ncol_co_c(&ncol_co);
+
+                // compute the chemical evolution
+                prizmo_evolve_c(x[i][j], &tgas[i][j], jflux, &dt, &verb, &ierr);
+
+                prizmo_get_tdust_c(x[i][j], &tgas[i][j], &tdust[i][j], jflux);
+
+                // radiative transfer
+                prizmo_rt_c(x[i][j], &tgas[i][j], jflux, &ds);
+
+                // compute the column densities
+                ncol_h2 += x[i][j][IDX_CHEM_H2] * ds;
+                ncol_co += x[i][j][IDX_CHEM_CO] * ds;
+
+                // store the radius for geometric dilution
+                rold = r[i];
+            }
+        }
+
+        // Write the results to a file
+        FILE *f = fopen("output.dat", "w");
+        for (int j = 0; j < ntheta; j++)
+        {
+            for (int i = 0; i < nr; i++)
+            {
+                double z = r[i] * tan(M_PI / 2.0 - theta[j]);
+                fprintf(f, "%e %e %e %e %e %e ", r[i], theta[j], z, ngas[i][j], tgas[i][j], tdust[i][j]);
+                for (int k = 0; k < NTRACER; k++)
+                {
+                    fprintf(f, "%e ", x[i][j][k]);
+                }
+                fprintf(f, "\n");
+            }
             fprintf(f, "\n");
         }
-        fprintf(f, "\n");
-    }
+        fclose(f);
+    } while (t < tend);
+    printf("\n");
 
-    fclose(f);
-
-    /*FILE *f = fopen("output.dat", "w");
-
-    while (1){
-    dt *= 1.2;
-    prizmo_evolve_c(x, &tgas, jflux, &dt, &verb, &ierr);
-    t += dt;
-
-    fprintf(f, "%e ", t);
-    fprintf(f, "%e ", tgas);
-    for(int i = 0; i < NTRACER; i++){
-        fprintf(f, "%e ", x[i]);
-    }
-    fprintf(f, "\n");
-
-    if(t > tend){
-        break;
-    }
-    }
-
-    fclose(f);*/
     return 0;
 }
