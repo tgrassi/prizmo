@@ -1,5 +1,5 @@
 # PRIZMO
-- PRIZMO is a library-like code to advance time-dependetly chemistry and temperature of a protoplanetary disk (M)HD simulation.
+- PRIZMO is a library-like code to advance time-dependent chemistry and temperature of a protoplanetary disk (M)HD simulation.
 - It preprocesses the input information to write optimized FORTRAN code.
 - It has a C interface that allows it to be coupled with codes like PLUTO.
 - The earlier code is described in [https://arxiv.org/abs/2004.04748] (Grassi et al. 2020)
@@ -7,14 +7,14 @@
 
 ![plot](./assets/disk.png)
 
-## Basic usage
+## Quickstart
 - Clone the repository
 ```
 git clone git@github.com:tgrassi/prizmo.git
 cd prizmo
 ```
 
-- Create a virtual environment (optional, but suggested)
+- Create a virtual environment (optional, but recommended)
 ```
 pip install virtualenv
 python -m venv env
@@ -30,6 +30,7 @@ pip install -r requirements.txt
 ```
 cd src_py
 python prizmo.py
+cd ..
 ```
 
 - Choose a model
@@ -39,7 +40,6 @@ cp models/disk/* .
 
 - Compile the code
 ```
-cd ..
 make
 ```
 
@@ -48,6 +48,13 @@ make
 ./test
 ```
 
+- Plot the results      
+Open another terminal while the code is running...     
+```
+python plot_jobs.py 10
+```
+where `10` is the number of processors you want to use for plotting.   
+It will create a set of PNG files for each time-step `plot_000000.png`, `plot_000001.png`, ...      
 
 ## Preprocessor
 Preprocessing is needed:
@@ -64,10 +71,10 @@ python prizmo.py
 ```
 wait...
 
-### Changing preprocessor inputs (e.g. radiation or dust properties)
+### How to change the preprocessor inputs (e.g., radiation, dust properties, ...)
 PRIZMO's preprocessor has default values for many choices. However, these can be configured by the user either by passing an input file with the flag -i (see test.ini for an example), or by setting any of the following command line arguments directly:
 * chemNet - the chemical network specified as a list of reactions
-* atomData - the file containing the details of level energies and fits for the de-exciation rates for the atomic cooling
+* atomData - the file containing the details of level energies and fits for the de-excitation rates for the atomic cooling
 * radiation_type - details of the spectrum to use
 * nphoto - the number of energy bins to use
 * energy_minmax - the minimum and maximum energies to use (eV)
@@ -79,21 +86,27 @@ Note: When you change radiation or dust properties, it is recommended that the c
 This also applies if you experience weird behaviors during the runtime stage.
 
 ## Compile and run
-### Fortran
-The first example is `main.f90`, it is written in FORTRAN and simulates a static disk    
+### Call from Fortran
+The example `models/disk/main.f90` is written in FORTRAN and simulates a static disk.    
 
 ```
+cp models/disk/* .
 make
 ./test
+python plot.py 1
 ```
-The makefile automatically searches for Intel Fortran, otherwise uses `gfortran`.    
+The makefile automatically searches for the Intel Fortran compiler (ifx), otherwise uses `gfortran` (not tested).    
 
-### C
-The example test `main_c.c` evolves a single cell, and it is intended to show how to call PRIZMO from C.
+### Call from C
+The example test `models/cbind/main_c.c` evolves a single cell, and it is intended to show how to call PRIZMO from C.
 ```
+cp models/cbind/* .
 make cbind
 ./test
+python plot.py
 ```
+The makefile automatically searches for Intel Fortran (ifx) and C (icx) compilers.    
+
 
 ## Known bugs/errors/warnings
 #### Missing XUVTOP warning
@@ -119,7 +132,7 @@ Warnings similar to this, but the code continues to run
 ```
 The solver is taking too many iterations to advance, but the solution is found anyway.    
 The cell is probably close to thermochemical equilibrium.     
-Ignore, if you don't have any clear strategy on how to improve the convergence (e.g., producing finer tables, changing tolerances). 
+Ignore it if you don't have any clear strategy on how to improve the convergence (e.g., producing finer tables, changing tolerances). 
 
 
 #### MAXSTEPS warning
