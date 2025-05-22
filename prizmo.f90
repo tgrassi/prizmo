@@ -31,7 +31,7 @@ contains
     !! PREPROCESS_END
     call load_verbatim_reactions()
 
-    print *, "everything loaded!"
+    print *, "PRIZMO: everything loaded!"
 
     gamma_ad = 7./5.
     d2g = 1d-2

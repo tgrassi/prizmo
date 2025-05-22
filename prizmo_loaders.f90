@@ -8,7 +8,7 @@ contains
     implicit none
     integer::i, unit
 
-    print *, "loading energy..."
+    print *, "PRIZMO: loading energy..."
 
     open(newunit=unit, file=trim(runtime_data_folder)//"energy.dat", status="old")
     do i=1,nphoto
@@ -23,7 +23,7 @@ contains
   ! ******************
   subroutine load_all_photo_xsecs()
 
-    print *, "loading photo xsecs..."
+    print *, "PRIZMO: loading photo xsecs..."
 
     !! PREPROCESS_LOAD_XSECS
     !! PREPROCESS_END
@@ -35,7 +35,7 @@ contains
     implicit none
     integer::i, unit
 
-    print *, "loading energy thresholds..."
+    print *, "PRIZMO: loading energy thresholds..."
 
     energy_threshold(:) = 0d0
 
@@ -73,7 +73,7 @@ contains
     ! character(len=1024)::fnames4d(atomic_cooling_nvec4d)
     character(len=1024)::fnames_5lev(20), fnames_3lev(6), fnames_2lev(2)
 
-    print *, "loading atomic cooling..."
+    print *, "PRIZMO: loading atomic cooling..."
 
     !! PREPROCESS_LOAD_ATOMIC_COOLING
     !! PREPROCESS_END
@@ -111,7 +111,7 @@ contains
     implicit none
     integer::unit, i, j, z
 
-    print *, "load phe tables..."
+    print *, "PRIZMO: load phe tables..."
     open(newunit=unit, file=trim(runtime_data_folder)//"jptot.dat", status="old")
     do i=zmin, zmax
       do j=1,nphoto
@@ -147,6 +147,8 @@ contains
     integer::z, unit, i, j
     real*8::tgas(nt)
 
+    print *, "PRIZMO: loading jtab from "//trim(fname)
+
     open(newunit=unit, file=trim(fname), status="old")
     do i=zmin, zmax
       do j=1,nt
@@ -171,7 +173,7 @@ contains
     character(len=1024)::fname
     real*8:: dummy
 
-    print *, "loading atomic tdust table..."
+    print *, "PRIZMO: loading atomic tdust table..."
 
     fname = trim(runtime_data_folder)//"dust_cooling_grid.dat"
     call load_3d_fit(trim(fname), dust_cooling_table_n1, dust_cooling_table_n2, dust_cooling_table_n3, dust_cooling_table_data, &
@@ -205,7 +207,7 @@ contains
     implicit none
     integer::i, unit
 
-    print *, "loading dust opacity..."
+    print *, "PRIZMO: loading dust opacity..."
 
     open(newunit=unit, file=trim(runtime_data_folder)//"kappa_dust.dat", status="old")
     do i=1,nphoto
@@ -221,7 +223,7 @@ contains
     integer::i, unit
     character(len=1024)::fnames(cool_H2_vec)
 
-    print *, "loading H2 cooling..."
+    print *, "PRIZMO: loading H2 cooling..."
 
     fnames = (/trim(runtime_data_folder)//"cool_H2_H.dat" , &
       trim(runtime_data_folder)//"cool_H2_Hj.dat", &
@@ -282,7 +284,7 @@ contains
     character(len=1024)::fname
     real*8:: dummy
 
-    print *, "loading shielding H2 table..."
+    print *, "PRIZMO: loading shielding H2 table..."
 
     fname = trim(runtime_data_folder)//"shielding_H2.dat"
 
@@ -297,7 +299,7 @@ contains
     character(len=1024)::fname
     real*8:: dummy
 
-    print *, "loading shielding CO table..."
+    print *, "PRIZMO: loading shielding CO table..."
 
     fname = trim(runtime_data_folder)//"shielding_CO.dat"
 
@@ -310,7 +312,7 @@ contains
     implicit none
     character(len=1024)::fname
 
-    print *, "loading CO cooling..."
+    print *, "PRIZMO: loading CO cooling..."
 
     fname = trim(runtime_data_folder)//"CO_cooling.dat"
 
@@ -323,7 +325,7 @@ contains
     implicit none
     integer::i, unit
 
-    print *, "loading verbatim reactions..."
+    print *, "PRIZMO: loading verbatim reactions..."
 
     open(newunit=unit, file=trim(runtime_data_folder)//"reactions.dat", status="old")
     do i=1,nreactions
