@@ -7,6 +7,7 @@ extern void prizmo_evolve_c(double *, double *, double *, double *, int *, int *
 extern void prizmo_rt_c(double *, double *, double *, double *);
 extern void prizmo_set_radial_ncol_h2_c(double *);
 extern void prizmo_set_radial_ncol_co_c(double *);
+extern void prizmo_set_vertical_ncol_co_c(double *);
 extern void prizmo_get_tdust_c(double *, double *, double *, double *);
 
 #define NTRACER 33
@@ -49,7 +50,7 @@ extern void prizmo_get_tdust_c(double *, double *, double *, double *);
 #define IDX_CHEM_Oj (NFLX + NIONS + 32)
 
 #define nr 20
-#define ntheta 21
+#define ntheta 24
 
 int main(void)
 {
@@ -162,13 +163,14 @@ int main(void)
         // compute the time step
         dt = fmin(dt * 1.5, tend - t);
         t += dt;
+        double ncol_co_vertical[nr] = {0e0}; // column density of CO, from pole to equator, cm^-2
 
-        // loop over radius
-        for (int j = 0; j < ntheta; j++)
+        // loop over theta (note theta=0 is the pole), from pole to equator
+        for (int j = ntheta - 1; j >= 0; j--)
         {
             double rold = rmin;
-            double ncol_h2 = 0e0;
-            double ncol_co = 0e0;
+            double ncol_h2 = 0e0; // column density of H2, cm^-2
+            double ncol_co = 0e0; // column density of CO, cm^-2
 
             // initialize the flux to the star radiation field
             for(int k=0; k<NPHOTO; k++)
@@ -182,7 +184,7 @@ int main(void)
                 // print out the progress
                 printf("\r t=%.3f%%; theta=%.2f%%; r=%.2f%%;    ",
                     1e2 * t / tend,
-                    1e2 * j / (ntheta - 1),
+                    1e2 * (1e0 - (float) j / (ntheta - 1)),
                     1e2 * i / (nr - 1));
 
                 // compute geomeric dilution of the radiation field
@@ -195,17 +197,36 @@ int main(void)
                 prizmo_set_radial_ncol_h2_c(&ncol_h2);
                 prizmo_set_radial_ncol_co_c(&ncol_co);
 
+                prizmo_set_vertical_ncol_co_c(&ncol_co_vertical[i]);
+
                 // compute the chemical evolution
+                // x: abundances, 1/cm^3, array of size NTRACER, input/output
+                // tgas: gas temperature, K, input/output
+                // jflux: radiation field, erg/cm^2/s, array of size NPHOTO, input
+                // dt: time step, s, input
+                // verb: verbosity level, 0=none, input
+                // ierr: error code, 0=ok, output
                 prizmo_evolve_c(x[i][j], &tgas[i][j], jflux, &dt, &verb, &ierr);
 
+                // get the dust temperature for output reasons only
                 prizmo_get_tdust_c(x[i][j], &tgas[i][j], &tdust[i][j], jflux);
 
                 // radiative transfer
+                // x: abundances, 1/cm^3, array of size NTRACER, input
+                // tgas: gas temperature, K, input
+                // jflux: radiation field, erg/cm^2/s, array of size NPHOTO, input/output
+                // ds: cell size, cm, input
                 prizmo_rt_c(x[i][j], &tgas[i][j], jflux, &ds);
 
-                // compute the column densities
+                // update the radial column densities of H2 and CO
                 ncol_h2 += x[i][j][IDX_CHEM_H2] * ds;
                 ncol_co += x[i][j][IDX_CHEM_CO] * ds;
+
+                // compute approximately the height of the cell
+                double dz = (r[i] - rold) * tan(M_PI / 2.0 - theta[j]);
+
+                // update the vertical column density of CO
+                ncol_co_vertical[i] += x[i][j][IDX_CHEM_CO] * dz;
 
                 // store the radius for geometric dilution
                 rold = r[i];
