@@ -28,8 +28,8 @@ wres_c = $(shell which icx > /dev/null; echo $$?)
 ifeq "$(wres_c)" "0"
 	cc = icx
 	switchCLIB = -lifcore -limf -lsvml -lintlc -ldl
-	switchCDBG = -O0
-	cswitch =
+	switchCDBG = -O0 -Wall -debug full
+	cswitch = -O3
 else
 	cc = gcc
 	switchCLIB = -lgfortran -lm
