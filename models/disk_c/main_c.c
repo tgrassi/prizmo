@@ -9,6 +9,7 @@ extern void prizmo_set_radial_ncol_h2_c(double *);
 extern void prizmo_set_radial_ncol_co_c(double *);
 extern void prizmo_set_vertical_ncol_co_c(double *);
 extern void prizmo_get_tdust_c(double *, double *, double *, double *);
+extern void prizmo_load_radiation_field_c(double *);
 
 #define NTRACER 33
 #define NPHOTO 1000
@@ -136,17 +137,7 @@ int main(void)
 
     // -----------------------------
     // Initialize the radiation field read from file
-    FILE *jflux_file = fopen("runtime_data/radiation_field.dat", "r");
-    char line[256];
-    int jflux_count = 0;
-    double num;
-    while (fgets(line, sizeof(line), jflux_file) != NULL)
-    {
-        sscanf(line, "%lf", &num);
-        jflux0[jflux_count] = num;
-        jflux_count++;
-    }
-    fclose(jflux_file);
+    prizmo_load_radiation_field_c(jflux0);
 
     // -----------------------------
     // time integration

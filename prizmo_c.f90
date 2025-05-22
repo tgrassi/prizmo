@@ -307,4 +307,14 @@ contains
 
   end subroutine prizmo_get_chi_FUV_c
 
+  ! ****************************
+  ! load radiation field with fixed name
+  subroutine prizmo_load_radiation_field_c(jflux) bind(C)
+    implicit none
+    real(C_DOUBLE),intent(out)::jflux(nphoto)
+
+    jflux = prizmo_load_radiation_field("runtime_data/radiation_field.dat")
+
+  end subroutine prizmo_load_radiation_field_c
+
 end module prizmo_c
