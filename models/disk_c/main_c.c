@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <math.h>
+#include <time.h>
 
 // interfaces
 extern void prizmo_init_c();
@@ -60,9 +61,10 @@ int main(void)
     double ngas[nr][ntheta];
     double tgas[nr][ntheta];
     double tdust[nr][ntheta];
+    double cpu[nr][ntheta];
     double jflux[NPHOTO];
     double jflux0[NPHOTO];
-    double dt, t, r[nr], theta[ntheta], ds;
+    double dt, t, r[nr], theta[ntheta], ds, dtheta;
     int ierr, verb;
 
     // constants
@@ -77,10 +79,10 @@ int main(void)
     // disk parameters
     double rmin = 1e0 * au2cm; // min radius, cm
     double rmax = 1e2 * au2cm; // max radius, cm
-    double tend = 1e4 * spy; // max integration time, s
+    double tend = 1e5 * spy; // max integration time, s
     double sigma0 = 1700.; // surface density at 1AU, g/cm^2
     double tgas0 = 1e2;    // temperature at 1AU, K
-    double mass = msun;    // star mass, g
+    double mstar = msun;    // star mass, g
     double rstar = rsun; // star radius, cm
     double mu = 2.34;  // mean molecular weight, no units
     double ngas_min = 1e-2; // min density, 1/cm^3
@@ -97,7 +99,7 @@ int main(void)
         // compute radius
         r[i] = rmin + (rmax - rmin) * i / (nr - 1);
         // compute orbital frequency
-        double omega = sqrt(gravity * mass / pow(r[i], 3));
+        double omega = sqrt(gravity * mstar / pow(r[i], 3));
 
         // loop over theta (note theta=0 is the pole)
         for (int j = 0; j < ntheta; j++)
@@ -141,11 +143,11 @@ int main(void)
 
     // -----------------------------
     // time integration
-    dt = spy;
-    t = 0e0;
-    verb = 0;
+    dt = spy * 1e-3;  // initial time step, s
+    t = 0e0; // initial time, s
+    verb = 0;  // verbosity level, 0=none
     ds = r[1] - r[0];  // cell size, cm
-
+    dtheta = theta[1] - theta[0];  // cell size, rad
 
     // loop over time
     do
@@ -173,8 +175,8 @@ int main(void)
             for (int i = 0; i < nr; i++)
             {
                 // print out the progress
-                printf("\r t=%.3f%%; theta=%.2f%%; r=%.2f%%;    ",
-                    1e2 * t / tend,
+                printf("\r t=%.1f%%; theta=%.1f%%; r=%.1f%%;    ",
+                    1e2 * log10(t+1e-40) / log10(tend),
                     1e2 * (1e0 - (float) j / (ntheta - 1)),
                     1e2 * i / (nr - 1));
 
@@ -188,7 +190,11 @@ int main(void)
                 prizmo_set_radial_ncol_h2_c(&ncol_h2);
                 prizmo_set_radial_ncol_co_c(&ncol_co);
 
+                // set the vertical column density of CO
                 prizmo_set_vertical_ncol_co_c(&ncol_co_vertical[i]);
+
+                // set start clock time
+                cpu[i][j] = clock();
 
                 // compute the chemical evolution
                 // x: abundances, 1/cm^3, array of size NTRACER, input/output
@@ -198,6 +204,9 @@ int main(void)
                 // verb: verbosity level, 0=none, input
                 // ierr: error code, 0=ok, output
                 prizmo_evolve_c(x[i][j], &tgas[i][j], jflux, &dt, &verb, &ierr);
+
+                // compute elapsed time
+                cpu[i][j] = ((double) (clock() - cpu[i][j])) / CLOCKS_PER_SEC;
 
                 // get the dust temperature for output reasons only
                 prizmo_get_tdust_c(x[i][j], &tgas[i][j], &tdust[i][j], jflux);
@@ -214,7 +223,7 @@ int main(void)
                 ncol_co += x[i][j][IDX_CHEM_CO] * ds;
 
                 // compute approximately the height of the cell
-                double dz = (r[i] - rold) * tan(M_PI / 2.0 - theta[j]);
+                double dz = r[i] * (tan(M_PI / 2.0 - theta[j]) - tan(M_PI / 2.0 - theta[j] - dtheta));
 
                 // update the vertical column density of CO
                 ncol_co_vertical[i] += x[i][j][IDX_CHEM_CO] * dz;
@@ -231,7 +240,7 @@ int main(void)
             for (int i = 0; i < nr; i++)
             {
                 double z = r[i] * tan(M_PI / 2.0 - theta[j]);
-                fprintf(f, "%e %e %e %e %e %e ", r[i], theta[j], z, ngas[i][j], tgas[i][j], tdust[i][j]);
+                fprintf(f, "%e %e %e %e %e %e %e ", r[i], theta[j], z, ngas[i][j], tgas[i][j], tdust[i][j], cpu[i][j]);
                 for (int k = 0; k < NTRACER; k++)
                 {
                     fprintf(f, "%e ", x[i][j][k]);

@@ -40,11 +40,19 @@ pc = ax.pcolor(np.pi / 2. - theta_unique, r_unique, dd, shading='nearest', cmap=
 fig.colorbar(pc, ax=ax, fraction=0.03)
 ax.set_title('Tdust / K')
 
+# cpu time
+ax = axs[0, 3]
+dd = np.log10(data[6])
+pc = ax.pcolor(np.pi / 2. - theta_unique, r_unique, dd, shading='nearest', cmap='jet')
+fig.colorbar(pc, ax=ax, fraction=0.03)
+ax.set_title('CPU / s')
+#ax.set_rlim(0, 20)
 
-for i, sp in enumerate(["H2", "CO", "C+", "O", "H", "H2O", "E", "CO_DUST", "H2O_DUST"]):
-    idx = species_names.index(sp) + 6
-    ax = axs.flatten()[i + 3]
-    dd = np.log10(data[idx] / data[3])
+
+for i, sp in enumerate(["H2", "CO", "C+", "H", "H2O", "E", "CO_DUST", "H2O_DUST"]):
+    idx = species_names.index(sp) + 7
+    ax = axs.flatten()[i + 4]
+    dd = np.log10((data[idx] + 1e-20) / data[3])
     pc = ax.pcolor(np.pi / 2. - theta_unique, r_unique, dd, shading='nearest', cmap='jet', vmin=-10, vmax=0)
     fig.colorbar(pc, ax=ax, fraction=0.03)
     ax.set_title('n_%s / ngas' % sp)
