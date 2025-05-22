@@ -12,11 +12,19 @@ import prizmo_heating_cooling
 import prizmo_main
 import numpy as np
 import warnings
+import os
 from prizmo_commons import init, idx2sp, chemNet, atomData, radiation_type, plotOn, erg2ev, args
 from prizmo_preprocess import preprocess
 
 np.seterr(divide="raise", over="raise", invalid="raise")
 warnings.simplefilter(action='ignore', category=FutureWarning)
+
+# get current working directory
+cwd = os.getcwd()
+
+if not cwd.endswith("src_py"):
+    print("Please run this script from the src_py directory.")
+    exit(1)
 
 init()
 

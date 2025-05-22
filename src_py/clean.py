@@ -1,6 +1,11 @@
 from glob import glob
 import os
 
+cwd = os.getcwd()
+if not cwd.endswith("src_py"):
+    print("Please run this script from the src_py directory.")
+    exit(1)
+
 makefile_pragmas = "../Makefile_pragmas"
 if os.path.isfile(makefile_pragmas):
     os.remove(makefile_pragmas)
