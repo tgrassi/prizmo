@@ -29,7 +29,7 @@ ifeq "$(wres_c)" "0"
 	cc = icx
 	switchCLIB = -lifcore -limf -lsvml -lintlc -ldl
 	switchCDBG = -O0 -Wall -debug full
-	cswitch = -O3
+	cswitchOPT = -O3
 else
 	cc = gcc
 	switchCLIB = -lgfortran -lm
@@ -39,6 +39,7 @@ endif
 
 #default switch
 fswitch = $(switchOPT)
+cswitch = $(cswitchOPT)
 
 #objects
 objs = opkda1.o
@@ -97,9 +98,14 @@ cbind_profile: fswitch = -O0 -pg
 cbind_profile: cswitch = -O0 -pg
 cbind_profile: cbind
 
+lib: fswitch = $(switchOPT) -fPIC -shared
+lib: cswitch = $(cswitchOPT) -fPIC -shared
+lib: $(objs) prizmo_c.o
+	$(cc) $(objs) prizmo_c.o -fPIC -shared  -o libprizmo.so $(switchCLIB) $(lib)
+
 #clean target
 clean:
-	rm -f *.o *.mod *__genmod.f90 *~ *.i90 *.i $(exe)
+	rm -f *.o *.mod *__genmod.f90 *~ *.i90 *.i $(exe) libprizmo.so
 
 .PHONY: clean
 

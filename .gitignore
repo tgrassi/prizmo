@@ -18,7 +18,9 @@ main.f90
 test
 main_c.c
 output.dat
-
+libprizmo.so
+prizmo.h
+.vscode/
 
 # Node artifact files
 node_modules/
