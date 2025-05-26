@@ -34,7 +34,7 @@ def prepare_atomic_cooling_levels(H2_inc, fname="../data/atomic_cooling/krome_da
         commons += cs
         cool_tot += ct
 
-    commons += "real*8,parameter::natomic_cools=%d\n" % (icount + 1)
+    commons += "integer,parameter::natomic_cools=%d\n" % (icount + 1)
 
     preprocess("../prizmo_loaders.f90", {"LOAD_ATOMIC_COOLING": loaders})
     preprocess("../prizmo_commons.f90", {"ATOMIC_COOLING_COMMONS": commons})
@@ -79,15 +79,15 @@ def prepare_atomic_cooling_tables(species_indexes):
         if ncolliders == 1:
             icount2 += 1
             atomic_cooling2 += "cool = cool + coola2d(%d) * x(%s)\n" % (icount2, idx)
-            atomic_cooling_loader2.append("\"%s\"" % ("runtime_data/cool_%s.dat" % a).ljust(30))
+            atomic_cooling_loader2.append("\"%s\"" % ("runtime_data/cool_%s.dat" % a).ljust(40))
         elif ncolliders == 2:
             icount3 += 1
             atomic_cooling3 += "cool = cool + coola3d(%d) * x(%s)\n" % (icount3, idx)
-            atomic_cooling_loader3.append("\"%s\"" % ("runtime_data/cool_%s.dat" % a).ljust(30))
+            atomic_cooling_loader3.append("\"%s\"" % ("runtime_data/cool_%s.dat" % a).ljust(40))
         elif ncolliders == 3:
             icount4 += 1
             atomic_cooling4 += "cool = cool + coola4d(%d) * x(%s)\n" % (icount4, idx)
-            atomic_cooling_loader4.append("\"%s\"" % ("runtime_data/cool_%s.dat" % a).ljust(30))
+            atomic_cooling_loader4.append("\"%s\"" % ("runtime_data/cool_%s.dat" % a).ljust(40))
         else:
             sys.exit("ERRORS colliders number %d is unknown, it should be 1-3" % ncolliders)
 
@@ -272,6 +272,9 @@ def prepare_xlevel(data, atom, nlevels, H2_inc, nt=10000):
                 fhk[j][i] = open(ffname, "w")
 
         fnames = ["\"runtime_data/cool_%s_%s_%s.dat\"" % (atom, collider, x) for x in vnames]
+
+        len_max = max([len(x) for x in fnames])
+        fnames = [x[:-1].ljust(len_max) + "\"" for x in fnames]
 
         loader += "fnames_%dlev = (/%s/)\n\n" % (nlevels, ", &\n".join(fnames))
 
