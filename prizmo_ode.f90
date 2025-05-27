@@ -39,7 +39,7 @@ contains
     end if
 
     if(solve_thermo) then
-      heat = heating(y(1:nspecies), Tgas, Tdust, jflux)
+      heat = heating(y(1:nspecies), Tgas, Tdust)
       cool = cooling(y(1:nspecies), Tgas, Tdust, jflux, flux)
 
       dy(idx_Tgas) = (gamma_ad - 1d0) * (heat - cool) / kboltzmann / ntot

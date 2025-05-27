@@ -221,7 +221,7 @@ contains
     real*8::heats(nheating)
 
     call init(x, Tgas, jflux)
-    heats(:) = heating_array(x, Tgas, Tdust, jflux)
+    heats(:) = heating_array(x, Tgas, Tdust)
 
   end function prizmo_get_heating_array
 
@@ -268,7 +268,7 @@ contains
       do i=1, ntemp
         tgas = 1d1**((i - 1) * (tmax - tmin) / (ntemp - 1) + tmin)
         tdust = tgas
-        heats(:) = heating_array(x, Tgas, Tdust, jflux)
+        heats(:) = heating_array(x, Tgas, Tdust)
         write(unit, '(99e17.8e3)') tgas, heats
       end do
     close(unit)

@@ -9,30 +9,30 @@ module prizmo_heating
 contains
 
   ! **************************
-  function heating(xin, Tgas, Tdust, jflux) result(heat)
+  function heating(xin, Tgas, Tdust) result(heat)
     implicit none
-    real*8,intent(in)::xin(nspecies), Tgas, Tdust, jflux(nphoto)
+    real*8,intent(in)::xin(nspecies), Tgas, Tdust
     real*8::heat, heats(nheating), x(nspecies)
 
     x = max(xin, 0d0)
 
-    heats = heating_array(x, Tgas, Tdust, jflux)
+    heats = heating_array(x, Tgas, Tdust)
 
     heat = sum(heats)
 
   end function heating
 
   ! **************************
-  function heating_array(x, Tgas, Tdust, jflux) result(heats)
+  function heating_array(x, Tgas, Tdust) result(heats)
     use prizmo_utils
     implicit none
-    real*8,intent(in)::x(nspecies), Tgas, Tdust, jflux(nphoto)
+    real*8,intent(in)::x(nspecies), Tgas, Tdust
     real*8::heats(nheating), ntot
 
     ntot = sum(x)
 
-    heats(1) = heating_photo(x, Tgas, Tdust, jflux, ntot)
-    heats(2) = heating_photoelectric(x, Tgas, jflux)
+    heats(1) = heating_photo(x, Tgas, Tdust, ntot)
+    heats(2) = heating_photoelectric(x, Tgas)
     heats(3) = heating_CR(x)
     !! PREPROCESS_H2DISS_HEATING
     !! PREPROCESS_END

@@ -148,7 +148,7 @@ contains
       flux(:) = get_flux(y(1:nspecies), Tgas, Tdust)
       x_steps(:, i) = y(1:nspecies)
       tgas_steps(i) = y(idx_tgas)
-      heat_steps(:, i) = heating_array(y(1:nspecies), Tgas, Tdust, jflux)
+      heat_steps(:, i) = heating_array(y(1:nspecies), Tgas, Tdust)
       cool_steps(:, i) = cooling_array(y(1:nspecies), Tgas, Tdust, jflux, flux)
       dy_steps(:, i) = get_fex(y(1:nspecies), Tgas)
 
@@ -166,7 +166,7 @@ contains
         else
           if(i == maxsteps) then
               if(MAXSTEPstop) then
-                  print *, "ERROR: MAXSTEPS but no oscillating solution!", istate, dt              
+                  print *, "ERROR: MAXSTEPS but no oscillating solution!", istate, dt
                   stop
               else
                   print *, "WARNING: MAXSTEPS but no oscillating solution!", istate, dt

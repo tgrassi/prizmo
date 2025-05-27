@@ -89,9 +89,9 @@ contains
   end subroutine compute_photoelectric_terms
 
   ! ****************************
-  function heating_photoelectric(x, tgas_in, jflux) result(heat)
+  function heating_photoelectric(x, tgas_in) result(heat)
     implicit none
-    real*8,intent(in)::x(nspecies), tgas_in, jflux(nphoto)
+    real*8,intent(in)::x(nspecies), tgas_in
     real*8::heat
     real*8::xx, y, eps, sigma, xe, tgas, xfuv
 

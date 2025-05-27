@@ -3,9 +3,9 @@ module prizmo_heating_photo
 contains
 
   ! ***************
-  function heating_photo(x, Tgas, Tdust, jflux, ntot) result(heat)
+  function heating_photo(x, Tgas, Tdust, ntot) result(heat)
     implicit none
-    real*8,intent(in)::x(nspecies), Tgas, Tdust, jflux(nphoto), ntot
+    real*8,intent(in)::x(nspecies), Tgas, Tdust, ntot
     real*8::heat
 
     heat = 0d0
