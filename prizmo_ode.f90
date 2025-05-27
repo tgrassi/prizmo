@@ -10,14 +10,13 @@ contains
   subroutine fex(neq, tt, yin, dy)
     integer::neq, i
     real*8::yin(neq), tt, dy(neq), y(neq)
-    real*8::flux(nreactions), Tdust, jflux(nphoto), ntot, log_tgas, log_ngas
+    real*8::flux(nreactions), Tdust, ntot, log_tgas, log_ngas
     real*8:: heat, cool, Tgas
 
     !y = max(yin, 0d0)
     y = yin
     Tgas = max(y(idx_tgas), 3d0)  ! FIXME
 
-    jflux = jflux_common
     ntot = sum(max(y(1:nspecies), 1d-40))
 
     log_tgas = log10(Tgas)
@@ -40,7 +39,7 @@ contains
 
     if(solve_thermo) then
       heat = heating(y(1:nspecies), Tgas, Tdust)
-      cool = cooling(y(1:nspecies), Tgas, Tdust, jflux, flux)
+      cool = cooling(y(1:nspecies), Tgas, Tdust, flux)
 
       dy(idx_Tgas) = (gamma_ad - 1d0) * (heat - cool) / kboltzmann / ntot
     else

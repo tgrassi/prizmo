@@ -108,8 +108,6 @@ contains
     tloc = 0d0
     neqa = nspecies+1
 
-    jflux_common = jflux
-
     Tdust = get_tdust(log10(tgas), log10(sum(x)))
 
     if(verboseChem==1) print*, "Got inputs to evolve:"
@@ -149,7 +147,7 @@ contains
       x_steps(:, i) = y(1:nspecies)
       tgas_steps(i) = y(idx_tgas)
       heat_steps(:, i) = heating_array(y(1:nspecies), Tgas, Tdust)
-      cool_steps(:, i) = cooling_array(y(1:nspecies), Tgas, Tdust, jflux, flux)
+      cool_steps(:, i) = cooling_array(y(1:nspecies), Tgas, Tdust, flux)
       dy_steps(:, i) = get_fex(y(1:nspecies), Tgas)
 
       ! Relative contributions to the initial delta

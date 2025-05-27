@@ -209,7 +209,7 @@ contains
     call init(x, Tgas, jflux)
 
     fluxes(:) = get_flux(x, Tgas, Tdust)
-    cools(:) = cooling_array(x, Tgas, Tdust, jflux, fluxes)
+    cools(:) = cooling_array(x, Tgas, Tdust, fluxes)
 
   end function prizmo_get_cooling_array
 
@@ -244,7 +244,7 @@ contains
         tgas = 1d1**((i - 1) * (tmax - tmin) / (ntemp - 1) + tmin)
         tdust = tgas
         fluxes(:) = get_flux(x, Tgas, Tdust)
-        cools(:) = cooling_array(x, Tgas, Tdust, jflux, fluxes)
+        cools(:) = cooling_array(x, Tgas, Tdust, fluxes)
         write(unit, '(99e17.8e3)') tgas, cools
       end do
     close(unit)

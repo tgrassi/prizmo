@@ -9,26 +9,26 @@ module prizmo_cooling
 contains
 
   ! **********************
-  function cooling(xin, Tgas, Tdust, jflux, fluxin) result(cool)
+  function cooling(xin, Tgas, Tdust, fluxin) result(cool)
     implicit none
-    real*8,intent(in)::xin(nspecies), Tgas, Tdust, jflux(nphoto), fluxin(nreactions)
+    real*8,intent(in)::xin(nspecies), Tgas, Tdust, fluxin(nreactions)
     real*8::cool, cools(ncooling), x(nspecies), fluxes(nreactions)
 
     fluxes = fluxin
     x = max(xin, 0d0)
     !fluxes = max(fluxin, 0d0)
 
-    cools = cooling_array(x, Tgas, Tdust, jflux, fluxes)
+    cools = cooling_array(x, Tgas, Tdust, fluxes)
 
     cool = sum(cools)
 
   end function cooling
 
   ! **********************
-  function cooling_array(x, Tgas, Tdust, jflux, fluxes) result(cools)
+  function cooling_array(x, Tgas, Tdust, fluxes) result(cools)
     use prizmo_utils
     implicit none
-    real*8,intent(in)::x(nspecies), Tgas, Tdust, jflux(nphoto), fluxes(nreactions)
+    real*8,intent(in)::x(nspecies), Tgas, Tdust, fluxes(nreactions)
     real*8::cools(ncooling), log_Tgas, log_ngas, Eabsorption, log_Hnuclei
 
     log_ngas = log10(sum(x))

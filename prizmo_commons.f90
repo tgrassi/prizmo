@@ -125,7 +125,7 @@ character(len=1024)::runtime_data_folder
 character(len=128)::reactions_verbatim(nreactions)
 
 ! FIXME: could cause problems with OPENMP
-real*8::jflux_common(nphoto), log_Eabsorption
+real*8::log_Eabsorption
 
 !! PREPROCESS_MASSES
 !! PREPROCESS_END
