@@ -220,16 +220,15 @@ contains
   ! ***************************
   subroutine load_H2_cooling_tabs()
     implicit none
-    integer::i, unit
     character(len=1024)::fnames(cool_H2_vec)
 
     print *, "PRIZMO: loading H2 cooling..."
 
-    fnames = (/trim(runtime_data_folder)//"cool_H2_H.dat" , &
-      trim(runtime_data_folder)//"cool_H2_Hj.dat", &
-      trim(runtime_data_folder)//"cool_H2_H2.dat", &
-      trim(runtime_data_folder)//"cool_H2_e.dat", &
-      trim(runtime_data_folder)//"cool_H2_HDL.dat"/)
+    fnames = (/trim(runtime_data_folder)//"cool_H2_H.dat  " , &
+               trim(runtime_data_folder)//"cool_H2_Hj.dat ", &
+               trim(runtime_data_folder)//"cool_H2_H2.dat ", &
+               trim(runtime_data_folder)//"cool_H2_e.dat  ", &
+               trim(runtime_data_folder)//"cool_H2_HDL.dat"/)
 
       !load_1d_fit_vec(fname, nvec, nx, data, do_log, skip_lines)
     call load_1d_fit_vec(fnames, cool_H2_vec, cool_H2_nx, cooling_H2data, do_log=.true.)
@@ -280,13 +279,15 @@ contains
   ! ************************
   subroutine load_shielding_H2_table()
     implicit none
-    integer::i, unit
     character(len=1024)::fname
-    real*8:: dummy
 
     print *, "PRIZMO: loading shielding H2 table..."
 
     fname = trim(runtime_data_folder)//"shielding_H2.dat"
+
+#ifdef __GNUC__
+    allocate(shielding_H2_data%fdata(shielding_H2_n1, shielding_H2_n2))
+#endif
 
     call load_2d_fit(trim(fname), shielding_H2_n1, shielding_H2_n2, shielding_H2_data, do_log=.true.)
 

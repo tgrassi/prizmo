@@ -16,8 +16,8 @@ ifeq "$(wres)" "0"
 	nowarn = -nowarn
 else
 	fc = gfortran
-	switchOPT = -ffree-line-length-none -O3 -g -fallow-argument-mismatch
-	switchDBG = -fbacktrace -g -fallow-argument-mismatch
+	switchOPT = -ffree-line-length-none -O3 -g -fallow-argument-mismatch -cpp
+	switchDBG = -fbacktrace -g -fallow-argument-mismatch -cpp
 	switchDBG += -ffpe-trap=zero,overflow,invalid
 	switchDBG += -fbounds-check -ffree-line-length-none -O0
 	nowarn = -w
@@ -45,6 +45,7 @@ cswitch = $(cswitchOPT)
 objs = opkda1.o
 objs += opkda2.o
 objs += opkdmain.o
+objs += prizmo_fit_types.o
 objs += prizmo_fit.o
 objs += prizmo_linear_solver.o
 #objs += prizmo_spline.o

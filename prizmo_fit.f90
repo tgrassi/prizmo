@@ -1,55 +1,5 @@
 module prizmo_fit
-  type, public :: fit1d_data(n1)
-    integer,len::n1
-    real*8::fdata(n1), xmin, invdx, dx, xmax, xfact
-  end type
-
-  type, public :: fit2d_data(n1, n2)
-    integer,len::n1, n2
-    real*8::fdata(n1, n2), xmin, invdx, dx, xmax, xfact
-    real*8::ymin, invdy, dy, ymax, yfact
-  end type
-
-  type, public :: fit3d_data(n1, n2, n3)
-    integer,len::n1, n2, n3
-    real*8::fdata(n1, n2, n3), xmin, invdx, dx, xmax, xfact
-    real*8::ymin, invdy, dy, ymax, yfact
-    real*8::zmin, invdz, dz, zmax, zfact
-  end type
-
-  type, public :: fit4d_data(n1, n2, n3, n4)
-    integer,len::n1, n2, n3, n4
-    real*8::fdata(n1, n2, n3, n4), xmin, invdx, dx, xmax, xfact
-    real*8::ymin, invdy, dy, ymax, yfact
-    real*8::zmin, invdz, dz, zmax, zfact
-    real*8::umin, invdu, du, umax, ufact
-  end type
-
-  type, public :: fit1d_data_vec(nv, n1)
-    integer,len::nv, n1
-    real*8::fdata(nv, n1), xmin, invdx, dx, xmax, xfact
-  end type
-
-  type, public :: fit2d_data_vec(nv, n1, n2)
-    integer,len::nv, n1, n2
-    real*8::fdata(nv, n1, n2), xmin, invdx, dx, xmax, xfact
-    real*8::ymin, invdy, dy, ymax, yfact
-  end type
-
-  type, public :: fit3d_data_vec(nv, n1, n2, n3)
-    integer,len::nv, n1, n2, n3
-    real*8::fdata(nv, n1, n2, n3), xmin, invdx, dx, xmax, xfact
-    real*8::ymin, invdy, dy, ymax, yfact
-    real*8::zmin, invdz, dz, zmax, zfact
-  end type
-
-  type, public :: fit4d_data_vec(nv, n1, n2, n3, n4)
-    integer,len::nv, n1, n2, n3, n4
-    real*8::fdata(nv, n1, n2, n3, n4), xmin, invdx, dx, xmax, xfact
-    real*8::ymin, invdy, dy, ymax, yfact
-    real*8::zmin, invdz, dz, zmax, zfact
-    real*8::umin, invdu, du, umax, ufact
-  end type
+use fit_types
 
 contains
 

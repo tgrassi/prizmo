@@ -18,7 +18,7 @@ def prepare_atomic_cooling(species_indexes, H2_inc, fname="../data/atomic_coolin
 def prepare_atomic_cooling_levels(H2_inc, fname="../data/atomic_cooling/krome_data.dat"):
     atoms = ["C", "O", "C+", "O+"]
 
-    funcs = loaders = commons = cool_tot = ""
+    funcs = loaders = commons = cool_tot = valloc_init = ""
     cool_arr = "cools(1) = atomic_cooling_H(x, 1d1**log_Tgas)\n"
     icount = 0
     for atom in atoms:
@@ -240,7 +240,7 @@ def prepare_xlevel(data, atom, nlevels, H2_inc, nt=10000):
                 aa[i][j] = [py2f90(data["Aul"][j, k]) for k in range(j)]
 
     defs = []
-    fits = loader = commons = cool_tot = ""
+    fits = loader = commons = cool_tot = valloc = ""
 
     has_ortho_para = False
 
@@ -275,6 +275,12 @@ def prepare_xlevel(data, atom, nlevels, H2_inc, nt=10000):
 
         len_max = max([len(x) for x in fnames])
         fnames = [x[:-1].ljust(len_max) + "\"" for x in fnames]
+
+        vname = "atomic_cooling_table_%s_%s" % (sp2spj(atom), spj)
+
+        loader += "#ifdef __GNUC__\n"
+        loader += "allocate(%s%%fdata(atomic_cooling_%dlev_nvec, atomic_cooling_n1))\n" % (vname, nlevels)
+        loader += "#endif\n\n"
 
         loader += "fnames_%dlev = (/%s/)\n\n" % (nlevels, ", &\n".join(fnames))
 
