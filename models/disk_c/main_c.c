@@ -183,7 +183,7 @@ int main(void)
                 // compute geomeric dilution of the radiation field
                 for(int k=0; k<NPHOTO; k++)
                 {
-                    jflux[k] = jflux[i] * rold * rold / r[i] / r[i];
+                    jflux[k] *= rold * rold / r[i] / r[i];
                 }
 
                 // set the column densities
