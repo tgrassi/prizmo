@@ -7,8 +7,7 @@ pluto_definitions.txt
 runtime_data/
 stdout_*.out
 stderr_*.out
-plot_*.png
-plot.png
+*.png
 output_*.dat
 function_*.dat
 fort.*
