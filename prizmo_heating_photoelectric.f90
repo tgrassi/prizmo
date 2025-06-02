@@ -66,7 +66,7 @@ contains
     implicit none
     real*8,intent(in)::jflux(nphoto)
     real*8::f(nphoto)
-    integer::i, idx1, idx2
+    integer::idx1, idx2
 
     idx1 = fuv_idx1
     idx2 = fuv_idx2

@@ -296,9 +296,7 @@ contains
   ! ************************
   subroutine load_shielding_CO_table()
     implicit none
-    integer::i, unit
     character(len=1024)::fname
-    real*8:: dummy
 
     print *, "PRIZMO: loading shielding CO table..."
 

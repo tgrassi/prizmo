@@ -58,7 +58,7 @@ contains
     integer,intent(out)::errState
 
     call init(x, Tgas, jflux)
-    call evolve(x, Tgas, jflux, dt, verboseChem, errState)
+    call evolve(x, Tgas, dt, verboseChem, errState)
 
   end subroutine prizmo_evolve
 

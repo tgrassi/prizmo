@@ -7,7 +7,7 @@ contains
   function get_tdust(log_Tgas_in, log_ngas_in) result(tdust)
     implicit none
     real*8,intent(in)::log_Tgas_in, log_ngas_in
-    real*8::tdust, Eabsorption, f(nphoto), log_ngas, log_tgas
+    real*8::tdust, f(nphoto), log_ngas, log_tgas
 
     log_Tgas = max(min(log_Tgas_in, tdust_table_data%ymax*0.99999), tdust_table_data%ymin)
     log_ngas = max(min(log_ngas_in, tdust_table_data%zmax*0.99999), tdust_table_data%zmin)

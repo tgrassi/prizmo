@@ -36,7 +36,7 @@ contains
     implicit none
     integer,parameter::n=2
     real*8,intent(in)::a(n, n), b(n)
-    real*8::c(n), iab
+    real*8::c(n)
 
     c(1) = a(2, 2) * b(1) / (a(2, 2) - a(2, 1))
     c(2) = b(1) - c(1)
@@ -251,7 +251,7 @@ contains
     integer,intent(in)::n
     real*8,intent(in)::a(n, n), b(n)
     real*8::c(n)
-    integer::ipiv(n), ierr, i, j
+    !integer::ipiv(n), ierr, i, j
 
     c(:) = b(:)
     print *, "LAPACK DGESV not implemented!"

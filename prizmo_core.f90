@@ -25,10 +25,10 @@ contains
   end subroutine init
 
   ! *************************
-  subroutine evolve(x, Tgas, jflux, dt, verboseChem, errState)
+  subroutine evolve(x, Tgas, dt, verboseChem, errState)
     implicit none
     real*8,intent(inout)::x(nspecies), Tgas
-    real*8,intent(in)::jflux(nphoto), dt
+    real*8,intent(in)::dt
     real*8::y(nspecies+1), Tdust
     integer,parameter::neq=nspecies+1
     external::dlsodes, xsetf
