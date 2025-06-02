@@ -95,8 +95,8 @@ cbind_debug: fswitch = $(switchDBG)
 cbind_debug: cswitch = $(switchCDBG)
 cbind_debug: cbind
 
-cbind_profile: fswitch = -O0 -pg
-cbind_profile: cswitch = -O0 -pg
+cbind_profile: fswitch = $(switchOPT) -pg
+cbind_profile: cswitch = $(cswitchOPT) -pg
 cbind_profile: cbind
 
 lib: fswitch = $(switchOPT) -fPIC -shared
