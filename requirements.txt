@@ -1,5 +1,5 @@
 matplotlib
-miepython
+miepython<=2.5.5
 numpy
 scipy
 tqdm
