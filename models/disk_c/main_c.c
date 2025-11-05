@@ -119,8 +119,10 @@ int main(void)
             double cs = sqrt(kboltzmann * tgas[i][j] / mu / pmass);
             double ng = sigma0 * pow(r[i] / au2cm, -1.5) / pmass / mu;
             double h = cs / omega;
-            double z = r[i] * tan(M_PI / 2.0 - theta[j]);
-            ngas[i][j] = ng / h / sqrt(2e0 * M_PI) * exp(-0.5 * pow(z / h, 2));
+            double z = r[i] * cos(theta[j]);
+            double s = r[i] * sin(theta[j]);
+
+            ngas[i][j] = ng/h/sqrt(2e0*M_PI) *exp( gravity*mstar/pow(cs,2) *( 1./r[i] - 1./s ));
             ngas[i][j] = fmax(ngas[i][j], ngas_min);
         }
     }
