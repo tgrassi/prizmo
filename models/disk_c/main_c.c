@@ -79,6 +79,8 @@ int main(void)
     // disk parameters
     double rmin = 1e0 * au2cm; // min radius, cm
     double rmax = 1e2 * au2cm; // max radius, cm
+    double thmin = M_PI/4;
+    double thmax = M_PI/2;
     double tend = 1e5 * spy; // max integration time, s
     double sigma0 = 1700.; // surface density at 1AU, g/cm^2
     double tgas0 = 1e2;    // temperature at 1AU, K
@@ -86,6 +88,12 @@ int main(void)
     double rstar = rsun; // star radius, cm
     double mu = 2.34;  // mean molecular weight, no units
     double ngas_min = 1e-2; // min density, 1/cm^3
+
+
+    // tweak mesh staggering
+    double dr=(rmax-rmin)/(nr), dth=(thmax-thmin)/(ntheta);
+    rmin += 0.5*dr,  rmax -= 0.5*dr;
+    thmin += 0.5*dth,  thmax -= 0.5*dth;
 
     // -----------------------------
     // initialize prizmo
@@ -98,19 +106,23 @@ int main(void)
     {
         // compute radius
         r[i] = rmin + (rmax - rmin) * i / (nr - 1);
+
         // compute orbital frequency
         double omega = sqrt(gravity * mstar / pow(r[i], 3));
 
         // loop over theta (note theta=0 is the pole)
         for (int j = 0; j < ntheta; j++)
         {
-            theta[j] = M_PI / 4.0 + M_PI / 4.0 * j / (ntheta - 1);
+            theta[j] = thmin + (thmax - thmin) * j / (ntheta - 1);
+
             tgas[i][j] = tgas0 * pow(r[i] / au2cm, -0.5);
             double cs = sqrt(kboltzmann * tgas[i][j] / mu / pmass);
             double ng = sigma0 * pow(r[i] / au2cm, -1.5) / pmass / mu;
             double h = cs / omega;
-            double z = r[i] * tan(M_PI / 2.0 - theta[j]);
-            ngas[i][j] = ng / h / sqrt(2e0 * M_PI) * exp(-0.5 * pow(z / h, 2));
+            double z = r[i] * cos(theta[j]);
+            double s = r[i] * sin(theta[j]);
+
+            ngas[i][j] = ng/h/sqrt(2e0*M_PI) *exp( gravity*mstar/pow(cs,2) *( 1./r[i] - 1./s ));
             ngas[i][j] = fmax(ngas[i][j], ngas_min);
         }
     }
