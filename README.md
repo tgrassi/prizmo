@@ -7,7 +7,7 @@
 
 ![plot](./assets/disk.png)
 
-## Quickstart
+## :rocket: Quickstart
 - Clone the repository
 ```
 git clone git@github.com:tgrassi/prizmo.git
@@ -56,7 +56,7 @@ python plot_jobs.py 10
 where `10` is the number of processors you want to use for plotting.   
 It will create a set of PNG files for each time-step `plot_000000.png`, `plot_000001.png`, ...      
 
-## Preprocessor
+## :wrench: Preprocessor
 Preprocessing is needed:
 
 * After cloning this repository
@@ -85,7 +85,7 @@ The command line arguments that were used are logged in a readme file in the run
 Note: When you change radiation or dust properties, it is recommended that the contents of the runtime_data folder be deleted!
 This also applies if you experience weird behaviors during the runtime stage.
 
-## Compile and run
+## :hammer: Compile and run
 ### Call from Fortran
 The example `models/disk/main.f90` is written in FORTRAN and simulates a static disk.    
 
@@ -108,7 +108,7 @@ python plot.py
 The makefile automatically searches for Intel Fortran (ifx) and C (icx) compilers.    
 
 
-## Known bugs/errors/warnings
+## :warning: Known bugs/errors/warnings
 #### Missing XUVTOP warning
 Ignore it unless you want to produce new cooling tables using CHIANTI.    
 Download the latest CHIANTI release [https://www.chiantidatabase.org/chianti_download.html].     
@@ -139,7 +139,7 @@ Ignore it if you don't have any clear strategy on how to improve the convergence
 Message `WARNING: MAXSTEPS with oscillating solution`.   
 Ignore, the solver is oscillating around the thermochemical equilibrium, hence it stops the integration earlier to avoid useless calculations.   
 
-## How to cite
+## :bookmark_tabs: How to cite
 ```
 @ARTICLE{2024A&A...690A.296S,
        author = {{Sellek}, A.~D. and {Grassi}, T. and {Picogna}, G. and {Rab}, Ch. and {Clarke}, C.~J. and {Ercolano}, B.},
