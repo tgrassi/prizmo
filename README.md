@@ -139,6 +139,46 @@ Ignore it if you don't have any clear strategy on how to improve the convergence
 Message `WARNING: MAXSTEPS with oscillating solution`.   
 Ignore, the solver is oscillating around the thermochemical equilibrium, hence it stops the integration earlier to avoid useless calculations.   
 
+## How to cite
+```
+@ARTICLE{2024A&A...690A.296S,
+       author = {{Sellek}, A.~D. and {Grassi}, T. and {Picogna}, G. and {Rab}, Ch. and {Clarke}, C.~J. and {Ercolano}, B.},
+        title = "{Photoevaporation of protoplanetary discs with PLUTO+PRIZMO: I. Lower X-ray{\textendash}driven mass-loss rates due to enhanced cooling}",
+      journal = {\aap},
+     keywords = {astrochemistry, hydrodynamics, methods: numerical, protoplanetary disks, stars: winds, outflows, X-rays: stars, Astrophysics - Earth and Planetary Astrophysics},
+         year = 2024,
+        month = oct,
+       volume = {690},
+          eid = {A296},
+        pages = {A296},
+          doi = {10.1051/0004-6361/202450171},
+archivePrefix = {arXiv},
+       eprint = {2408.00848},
+ primaryClass = {astro-ph.EP},
+       adsurl = {https://ui.adsabs.harvard.edu/abs/2024A&A...690A.296S},
+      adsnote = {Provided by the SAO/NASA Astrophysics Data System}
+}
+```
+and    
+```
+@ARTICLE{2020MNRAS.494.4471G,
+       author = {{Grassi}, T. and {Ercolano}, B. and {Sz{\H{u}}cs}, L. and {Jennings}, J. and {Picogna}, G.},
+        title = "{Modelling thermochemical processes in protoplanetary discs I: numerical methods}",
+      journal = {\mnras},
+     keywords = {astrochemistry, radiative transfer, methods: numerical, ISM: evolution, photodissociation region, Astrophysics - Earth and Planetary Astrophysics, Astrophysics - Solar and Stellar Astrophysics},
+         year = 2020,
+        month = may,
+       volume = {494},
+       number = {3},
+        pages = {4471-4491},
+          doi = {10.1093/mnras/staa971},
+archivePrefix = {arXiv},
+       eprint = {2004.04748},
+ primaryClass = {astro-ph.EP},
+       adsurl = {https://ui.adsabs.harvard.edu/abs/2020MNRAS.494.4471G},
+      adsnote = {Provided by the SAO/NASA Astrophysics Data System}
+}
 
 
+```
 
