@@ -115,12 +115,13 @@ int main(void)
         {
             theta[j] = thmin + (thmax - thmin) * j / (ntheta - 1);
 
-            tgas[i][j] = tgas0 * pow(r[i] / au2cm, -0.5);
-            double cs = sqrt(kboltzmann * tgas[i][j] / mu / pmass);
-            double ng = sigma0 * pow(r[i] / au2cm, -1.5) / pmass / mu;
-            double h = cs / omega;
             double z = r[i] * cos(theta[j]);
             double s = r[i] * sin(theta[j]);
+
+            tgas[i][j] = tgas0 * pow(s / au2cm, -0.5);
+            double cs = sqrt(kboltzmann * tgas[i][j] / mu / pmass);
+            double ng = sigma0 * pow(s / au2cm, -1.5) / pmass / mu;
+            double h = cs / omega;
 
             ngas[i][j] = ng/h/sqrt(2e0*M_PI) *exp( gravity*mstar/pow(cs,2) *( 1./r[i] - 1./s ));
             ngas[i][j] = fmax(ngas[i][j], ngas_min);
