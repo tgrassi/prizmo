@@ -10,6 +10,7 @@ kboltzmann = 1.380658e-16  # erg / K
 kboltzmann_eV = kboltzmann * erg2ev  # eV / K
 pmass = 1.6726219e-24  # g
 emass = 9.10938e-28  # g
+nmass = 1.66053906660e-24  # g
 echarge = 4.80320425e-10  # statC
 echarge2 = echarge**2  # stataC^2
 
@@ -169,14 +170,21 @@ def sp2mass(sp):
     if sp == "E":
         return emass
 
-    mdict = {"H": 1*pmass,
-             "He": 4*pmass,
-             "C": 12*pmass,
-             "O": 16*pmass}
+    pen = pmass + emass + nmass
+
+    mdict = {"H": pmass+emass,
+             "He": 2*pen,
+             "C": 6*pen,
+             "N": 7*pen,
+             "O": 8*pen,
+             "Si": 14*pen,
+             "D": pen,}
+
     mass = 0e0
     for k, v in mdict.items():
         mass += count_X(sp, k) * v
     mass -= emass * sp.count("+")
+    mass += emass * sp.count("-")
 
     return mass
 
