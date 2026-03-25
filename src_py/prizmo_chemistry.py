@@ -95,17 +95,22 @@ def prepare(fname="../networks/test.dat", main=False, speciesList=None):
 
     # prepare get_electrons
     cations = ["%d * x(%s)" % (x.count("j"), x) for x in species if "j" in x]
-    electron_sum = "ne = " + " + ".join([x.replace("1 * ", "") for x in cations])
+    anions = ["%d * x(%s)" % (x.count("q"), x) for x in species if "q" in x]
+    electron_sum = "ne = 0e0"
+    if len(cations) > 0:
+        electron_sum += " + " + " + ".join([x.replace("1 * ", "") for x in cations])
+    if len(anions) > 0:
+        electron_sum += " - " + " - ".join([x.replace("1 * ", "") for x in anions]) + "\n"
 
     # prepare get_nuclei for different atoms
     xnuclei_pragma = dict()
-    for xa in ["H", "C", "O", "He"]:
+    for xa in ["H", "C", "O", "He", "D", "N", "Si"]:
         xnuclei = ["%d * x(%s)" % (count_X(x, xa), x) for x in species if count_X(x, xa) > 0]
         nuclei = [x.replace("1 * ", "") for x in xnuclei]
         if len(nuclei) == 0:
             xnuclei = "n%s = 0d0" % xa
         else:
-            xnuclei = ("n%s =" % xa) + " + ".join(nuclei)
+            xnuclei = ("n%s = " % xa) + " + ".join(nuclei)
         xnuclei_pragma[xa.upper() + "NUCLEI"] = xnuclei
 
     # save verbatim reactions to file
@@ -247,8 +252,8 @@ def parse_prototype(line):
 
 
 def check_charge_conservation(rr_names, pp_names, verbatim):
-    rr_charge = sum([x.count("+") for x in rr_names]) - sum([x == "E" for x in rr_names])
-    pp_charge = sum([x.count("+") for x in pp_names]) - sum([x == "E" for x in pp_names])
+    rr_charge = sum([x.count("+") for x in rr_names]) - sum([x == "E" for x in rr_names]) - sum([x.count("-") for x in rr_names])
+    pp_charge = sum([x.count("+") for x in pp_names]) - sum([x == "E" for x in pp_names]) - sum([x.count("-") for x in pp_names])
     if rr_charge != pp_charge:
         print("problems with charge conservation in", verbatim)
         sys.exit()
@@ -433,6 +438,11 @@ def parse_line(line):
         rr, pp, kk = line.split(";")
     rr = parse_species(rr)
     pp = parse_species(pp)
+
+    for ee in ["e", "e-"]:
+        rr = ["E" if x == ee else x for x in rr]
+        pp = ["E" if x == ee else x for x in pp]
+
     return rr, pp, kk.strip()
 
 
