@@ -17,7 +17,7 @@ contains
     y = yin
     Tgas = max(y(idx_tgas), 3d0)  ! FIXME
 
-    ntot = sum(max(y(1:nspecies), 1d-40))
+    ntot = y(idx_H2) + y(idx_H) !sum(max(y(1:nspecies), 1d-40))
 
     log_tgas = log10(Tgas)
     log_ngas = log10(ntot)
@@ -25,23 +25,20 @@ contains
 
     flux(:) = get_flux(y(1:nspecies), Tgas, Tdust)
 
-    if(minval(kall) < 0d0) then
-      print *, "ERROR: negative kall!!!"
-      print *, "temperature, K", Tgas
-      do i=1,nreactions
-        print *, i, kall(i)
-      end do
-      do i=1,nspecies
-        print *, i, y(i)
-      end do
-      stop
-    end if
+    ! if(minval(kall) < 0d0) then
+    !   print *, "ERROR: negative kall!!!"
+    !   print *, "temperature, K", Tgas
+    !   do i=1,nreactions
+    !     print *, i, kall(i)
+    !   end do
+    !   do i=1,nspecies
+    !     print *, i, y(i)
+    !   end do
+    !   stop
+    ! end if
 
     if(solve_thermo) then
-      heat = heating(y(1:nspecies), Tgas, Tdust)
-      cool = cooling(y(1:nspecies), Tgas, Tdust, flux)
-
-      dy(idx_Tgas) = (gamma_ad - 1d0) * (heat - cool) / kboltzmann / ntot
+      dy(idx_Tgas) = thermo(y, Tgas, Tdust, flux, ntot)
     else
       dy(idx_Tgas) = 0d0
     end if
@@ -52,6 +49,19 @@ contains
     end if
 
   end subroutine fex
+
+  ! ***************************
+  function thermo(y, Tgas, Tdust, flux, ntot)
+    implicit none
+    real*8::y(nspecies), Tgas, Tdust, flux(nreactions), ntot
+    real*8::thermo, heat, cool
+
+    heat = heating(y(1:nspecies), Tgas, Tdust)
+    cool = cooling(y(1:nspecies), Tgas, Tdust, flux)
+
+    thermo = (gamma_ad - 1d0) * (heat - cool) / kboltzmann / ntot
+
+  end function thermo
 
   ! ***************************
   ! Jacobian, pd(i,j)=df(i)/dx(j), see DLSODES documentation
