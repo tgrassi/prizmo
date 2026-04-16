@@ -64,7 +64,8 @@ def prepare(fname="../networks/test.dat", main=False, speciesList=None):
             continue
 
         if in_custom_variables:
-            custom_variables += line + "\n"
+            if line.strip() != "":
+                custom_variables += line + "\n"
             continue
 
         rr_org, pp_org, krate = parse_line(line)
@@ -177,6 +178,8 @@ def prepare(fname="../networks/test.dat", main=False, speciesList=None):
     custom_functions = [x if x.lower().startswith("function") or x.lower().startswith("end function") else "  "+x for x in custom_functions.split("\n")]
     custom_functions = "\n".join(custom_functions)
 
+    custom_variables_names = [x.split("=")[0].strip() for x in custom_variables.split("\n")]
+    custom_variables = "\n".join(["real*8::%s" % x.strip() for x in custom_variables_names if x.strip() != ""]) + "\n\n" + custom_variables
 
     if not main:
         preprocess("../prizmo_ode.f90", {"ODE": ode})

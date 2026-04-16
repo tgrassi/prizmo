@@ -1,10 +1,10 @@
-# SURFACE CHEMISTRY
+# surface chemistry
 CO -> CO_DUST         []
 CO_DUST -> CO         []    1390.
 H2O -> H2O_DUST       []
 H2O_DUST -> H2O       []    5700.
 
-
+# rates with prototype expression
 PROTOTYPE[VAR1_01 * Tgas32**(VAR2_01)]{
   H + CH -> C + H2                                            [3.000000e+02, 2.000000e+03]            2.70e-11 * Tgas32**(0.38)
   He+ + C -> C+ + He                                          [, 3.000000e+02]                        6.30e-15 * Tgas32**(0.75)
@@ -16,16 +16,27 @@ PROTOTYPE[VAR1_01 * Tgas32**(VAR2_01)]{
   CH + O -> HCO+ + E                                          [, 1.750000e+03]                        2.00e-11 * Tgas32**(0.44)
 }
 
-# not real rates, just for test
-H3+ + E -> H2 + H [] ftest(Tgas, x, 1d-10) * myvar1
-O+ + E -> O [] ftest(Tgas, x, 1d-10) * myvar2
+# photoionization rates
+H -> H+ + E                                                 []                                      PHOTO, 13.60
+He -> He+ + E                                               []                                      PHOTO, 24.59
 
+# constant rate coefficients
+H+ + CH2 -> CH+ + H2                                        []                                      1.40e-09
+H+ + CH4 -> CH3+ + H2                                       []                                      2.30e-09
+H + CH4+ -> CH3+ + H2                                       []                                      1.00e-11
+
+# derived Tgas expressions (see rates.f90)
+C+ + E -> C                              [] 4.700000e-13 / Tgas14**(0.62)
+C++ + E -> C+                            [] 2.300000e-12 / Tgas14**(0.65)
+C+++ + E -> C++                          [] 4.900000e-12 / Tgas14**(0.80)
+
+# custom variables
 VARIABLES{
-    real*8::myvar1, myvar2
     myvar1 = Tgas**2
     myvar2 = 1.23d0
 }
 
+# custom functions
 FUNCTION{
 function ftest(Tgas, x, pp) result(f)
     implicit none
@@ -36,3 +47,7 @@ function ftest(Tgas, x, pp) result(f)
 
 end function ftest
 }
+
+# not real rates, just for test
+H3+ + E -> H2 + H [] ftest(Tgas, x, 1d-10) * myvar1
+O+ + E -> O [] ftest(Tgas, x, 1d-10) * myvar2
