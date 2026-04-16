@@ -4,6 +4,9 @@ module prizmo_rates
   use prizmo_utils
 contains
 
+  !! PREPROCESS_CUSTOM_FUNCTIONS
+  !! PREPROCESS_END
+
   ! ************************
   subroutine compute_rates(x, Tgas, Tdust)
     implicit none

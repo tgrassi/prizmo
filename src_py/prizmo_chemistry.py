@@ -1,3 +1,4 @@
+import re
 import sys
 
 import numpy as np
@@ -28,6 +29,8 @@ def prepare(fname="../networks/test.dat", main=False, speciesList=None):
     verbatim_reactions = []
     prototype = prototype_vars = prototype_idxs = None
     prototype_pragma = prototype_define = ""
+    in_custom_function = False
+    custom_functions = ""
     i = 0
     for line in rows.split("\n"):
 
@@ -35,10 +38,22 @@ def prepare(fname="../networks/test.dat", main=False, speciesList=None):
             if use_reaction_prototypes:
                 prototype = parse_prototype(line)
             continue
+
+        if line.startswith("FUNCTION{"):
+            in_custom_function = True
+            continue
+
         if line == "}":
             prototype_pragma += get_prototype_pragma(prototype_vars, prototype_idxs, prototype)
             prototype_define += get_prototype_define(prototype_vars)
             prototype = prototype_vars = prototype_idxs = None
+            if in_custom_function:
+                custom_functions += "\n"
+            in_custom_function = False
+            continue
+
+        if in_custom_function:
+            custom_functions += line + "\n"
             continue
 
         rr_org, pp_org, krate = parse_line(line)
@@ -147,11 +162,18 @@ def prepare(fname="../networks/test.dat", main=False, speciesList=None):
         common_vars += "integer,parameter::%s=%d\n" % (sp, i + 1)
         indexes += "integer,parameter::prizmo_%s=%s\n" % (sp, sp)
 
+    # indent custom functions
+    custom_functions = [x if x.lower().startswith("function") or x.lower().startswith("end function") else "  "+x for x in custom_functions.split("\n")]
+    custom_functions = "\n".join(custom_functions)
+
+
     if not main:
         preprocess("../prizmo_ode.f90", {"ODE": ode})
-        preprocess("../prizmo_rates.f90", {"RATES": krates.replace("e", "d").replace("Hd", "He").replace("dxp", "exp").replace("usdr", "user").replace("ddbyd", "debye").replace("*invTgas","d0*invTgas"),
+        krates_f90 = re.sub(r"([0-9])e([0-9+-])", r"\1d\2", krates)
+        preprocess("../prizmo_rates.f90", {"RATES": krates_f90,
                                            "PROTOTYPES": prototype_pragma,
-                                           "PROTOTYPES_DEFINE": prototype_define})
+                                           "PROTOTYPES_DEFINE": prototype_define,
+                                           "CUSTOM_FUNCTIONS": custom_functions})
         preprocess("../prizmo_rates_photo.f90", {"PHOTORATES": krates_photo})
         preprocess("../prizmo_rates_heating.f90", {"PHOTOHEATING_RATE": photoheating_rate})
         preprocess("../prizmo_heating_photo.f90", {"PHOTOHEATING": photoheating})
@@ -250,6 +272,10 @@ def parse_prototype(line):
     prototype = prototype.lower().replace(" ", "")
     return prototype
 
+def parse_custom_function_vars(line):
+    vars = line.replace("]", "[").split("[")[1]
+    vars = [x.strip() for x in vars.split(",")]
+    return vars
 
 def check_charge_conservation(rr_names, pp_names, verbatim):
     rr_charge = sum([x.count("+") for x in rr_names]) - sum([x == "E" for x in rr_names]) - sum([x.count("-") for x in rr_names])

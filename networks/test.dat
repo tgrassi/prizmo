@@ -1,27 +1,32 @@
-# photochemistry needs energy threshold
-#H -> H+ + E ; PHOTO,  13.59844
-H+ + E -> H ; 2.36e-12 * (Tgas / 3d2)**(-0.64)
+# SURFACE CHEMISTRY
+CO -> CO_DUST         []
+CO_DUST -> CO         []    1390.
+H2O -> H2O_DUST       []
+H2O_DUST -> H2O       []    5700.
 
 
-C -> C+ + E ; PHOTO, 11.2603
-C+ + E -> C ; 4.67e-12 * Tgas32**(-0.6)
+PROTOTYPE[VAR1_01 * Tgas32**(VAR2_01)]{
+  H + CH -> C + H2                                            [3.000000e+02, 2.000000e+03]            2.70e-11 * Tgas32**(0.38)
+  He+ + C -> C+ + He                                          [, 3.000000e+02]                        6.30e-15 * Tgas32**(0.75)
+  H + He+ -> He + H+                                          [, 1.000000e+03]                        4.85e-15 * Tgas32**(0.18)
+  O2+ + E -> O + O                                            [, 3.000000e+02]                        1.95e-07 * Tgas32**(-0.70)
+  H+ + H -> H2+                                               [2.000000e+02, 4.000000e+03]            5.13e-19 * Tgas32**(1.85)
+  H2 + C+ -> CH2+                                             [, 3.000000e+02]                        4.00e-16 * Tgas32**(-0.20)
+  O + O -> O2                                                 [, 3.000000e+02]                        4.90e-20 * Tgas32**(1.58)
+  CH + O -> HCO+ + E                                          [, 1.750000e+03]                        2.00e-11 * Tgas32**(0.44)
+}
 
-O -> O+ + E ; PHOTO, 13.6181
-O+ + E -> O ; 3.4e-12 * Tgas32**(-0.63)
+# not real rates, just for test
+H3+ + E -> H2 + H [] ftest(Tgas, x, 1d-10)
+O+ + E -> O [] ftest(Tgas, x, 1d-10)
 
-H + H -> H2 ; 2.121e-17
-H2 -> H + H ; PHOTO, 1e99
+FUNCTION{
+function ftest(Tgas, x, pp) result(f)
+    implicit none
+    real*8,intent(in)::tgas, x(nspecies), pp
+    real*8::f
 
-H -> H+ + E ; user_cr * 0.46
-H2 -> H+ + H + E ; user_cr * 0.02
-H2 -> H + H ; user_cr * 0.1
+    f = pp * exp(-1.223e4 / Tgas)
 
-He+ + E -> He ; 2.36e-12 * Tgas32**(-0.64)
-He -> He+ + E ; user_cr * 0.5
-
-
-CO -> C + O ; PHOTO, 1e99
-
-C+ + H2 -> CH2+ ; 4d-16 * Tgas32**(-0.2)
-CH2+ + E -> CH + H ; 1.6d-7 * Tgas32**(-0.6)
-CH + O -> CO + H ;  6.6d-11
+end function ftest
+}
