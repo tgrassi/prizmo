@@ -17,8 +17,14 @@ PROTOTYPE[VAR1_01 * Tgas32**(VAR2_01)]{
 }
 
 # not real rates, just for test
-H3+ + E -> H2 + H [] ftest(Tgas, x, 1d-10)
-O+ + E -> O [] ftest(Tgas, x, 1d-10)
+H3+ + E -> H2 + H [] ftest(Tgas, x, 1d-10) * myvar1
+O+ + E -> O [] ftest(Tgas, x, 1d-10) * myvar2
+
+VARIABLES{
+    real*8::myvar1, myvar2
+    myvar1 = Tgas**2
+    myvar2 = 1.23d0
+}
 
 FUNCTION{
 function ftest(Tgas, x, pp) result(f)

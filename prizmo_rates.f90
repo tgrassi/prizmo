@@ -19,6 +19,9 @@ contains
     !! PREPROCESS_PROTOTYPES_DEFINE
     !! PREPROCESS_END
 
+    !! PREPROCESS_CUSTOM_VARIABLES
+    !! PREPROCESS_END
+
     ! temperature shortcuts
     te = Tgas * 8.617343d-5
     lnte = log(te)

@@ -30,7 +30,9 @@ def prepare(fname="../networks/test.dat", main=False, speciesList=None):
     prototype = prototype_vars = prototype_idxs = None
     prototype_pragma = prototype_define = ""
     in_custom_function = False
+    in_custom_variables = False
     custom_functions = ""
+    custom_variables = ""
     i = 0
     for line in rows.split("\n"):
 
@@ -43,6 +45,10 @@ def prepare(fname="../networks/test.dat", main=False, speciesList=None):
             in_custom_function = True
             continue
 
+        if line.startswith("VARIABLES{"):
+            in_custom_variables = True
+            continue
+
         if line == "}":
             prototype_pragma += get_prototype_pragma(prototype_vars, prototype_idxs, prototype)
             prototype_define += get_prototype_define(prototype_vars)
@@ -50,10 +56,15 @@ def prepare(fname="../networks/test.dat", main=False, speciesList=None):
             if in_custom_function:
                 custom_functions += "\n"
             in_custom_function = False
+            in_custom_variables = False
             continue
 
         if in_custom_function:
             custom_functions += line + "\n"
+            continue
+
+        if in_custom_variables:
+            custom_variables += line + "\n"
             continue
 
         rr_org, pp_org, krate = parse_line(line)
@@ -173,7 +184,8 @@ def prepare(fname="../networks/test.dat", main=False, speciesList=None):
         preprocess("../prizmo_rates.f90", {"RATES": krates_f90,
                                            "PROTOTYPES": prototype_pragma,
                                            "PROTOTYPES_DEFINE": prototype_define,
-                                           "CUSTOM_FUNCTIONS": custom_functions})
+                                           "CUSTOM_FUNCTIONS": custom_functions,
+                                           "CUSTOM_VARIABLES": custom_variables})
         preprocess("../prizmo_rates_photo.f90", {"PHOTORATES": krates_photo})
         preprocess("../prizmo_rates_heating.f90", {"PHOTOHEATING_RATE": photoheating_rate})
         preprocess("../prizmo_heating_photo.f90", {"PHOTOHEATING": photoheating})
