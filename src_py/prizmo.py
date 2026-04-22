@@ -28,14 +28,14 @@ if not cwd.endswith("src_py"):
 
 init()
 
-species, photo_limits = prizmo_chemistry.prepare(fname=chemNet)
-species_names = [idx2sp(x) for x in species]
+species_idxs, photo_limits = prizmo_chemistry.prepare(fname=chemNet)
+species_names = [idx2sp(x) for x in species_idxs]
 H2_inc = 'H2' in species_names
 CO_inc = 'CO' in species_names
 
-prizmo_cooling_atomic.prepare_atomic_cooling(species, H2_inc, fname=atomData)
+prizmo_cooling_atomic.prepare_atomic_cooling(species_idxs, H2_inc, fname=atomData)
 
-user_energy = prizmo_photo.prepare(photo_limits, species)
+user_energy = prizmo_photo.prepare(photo_limits, species_idxs)
 
 prizmo_dust_opacity.prepare(user_energy)
 
@@ -65,6 +65,12 @@ f = open("../runtime_data/README.txt","w")
 for arg, val in args.__dict__.items():
     f.write("{}: {}\n".format(arg, val))
 f.close()
+
+print("************************")
+print("Number of chemical species:", len(species_idxs))
+for i, sp in enumerate(species_idxs):
+    print("%s = %i" % (sp, i+1))
+print("(note: indexes are 1-based)")
 
 print("************************")
 print("All preprocessing done!")

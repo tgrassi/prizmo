@@ -9,6 +9,7 @@ from prizmo_commons import nphoto, sp2idx, print_title, ev2erg, idx2sp, count_X,
 
 def prepare(fname="../networks/test.dat", main=False, speciesList=None):
     print_title("chemistry")
+    print("Reading chemical network:", fname)
     rows = ""
     for row in open(fname):
         srow = row.strip()
@@ -111,6 +112,12 @@ def prepare(fname="../networks/test.dat", main=False, speciesList=None):
             for _ in range(pp.count(sp)):
                 ode += " + flux(%d)" % (i + 1)
         ode += "\n"
+
+    species_names = [idx2sp(x) for x in species]
+    if main:
+        open("runtime_data/species.dat", "w").write("\n".join(species_names))
+    else:
+        open("../runtime_data/species.dat", "w").write("\n".join(species_names))
 
     # write python useful stuff
     species_py = "species_names = [%s]" % ", ".join(["\"%s\"" % idx2sp(x) for x in species])
