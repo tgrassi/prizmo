@@ -286,6 +286,17 @@ contains
   end subroutine prizmo_set_crate_c
 
   ! ****************************
+  subroutine prizmo_get_electrons_c(x, ne) bind(C)
+    use prizmo_commons
+    implicit none
+    real(C_DOUBLE),intent(in)::x(nspecies)
+    real(C_DOUBLE),intent(out)::ne
+
+    ne = prizmo_get_electrons(x)
+
+  end subroutine prizmo_get_electrons_c
+
+  ! ****************************
   ! set absolute tolerances for all the species
   subroutine prizmo_set_atol_all_c(val) bind(C)
     implicit none

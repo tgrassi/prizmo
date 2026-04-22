@@ -347,6 +347,17 @@ contains
 
   end subroutine prizmo_set_vertical_Ncol_CO
 
+  ! ****************************
+  function prizmo_get_electrons(x) result(ne)
+    use prizmo_utils
+    implicit none
+    real*8,intent(in)::x(nspecies)
+    real*8::ne
+
+    ne = get_electrons(x)
+
+  end function prizmo_get_electrons
+
   ! ********************
   function prizmo_get_rates(x, Tgas, Tdust, jflux) result(k)
     use prizmo_rates
