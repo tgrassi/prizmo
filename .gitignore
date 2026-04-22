@@ -16,6 +16,7 @@ plot*.py
 main.f90
 test
 main_c.c
+main.ipynb
 output.dat
 libprizmo.so
 prizmo.h
