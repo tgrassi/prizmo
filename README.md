@@ -107,6 +107,19 @@ python plot.py
 ```
 The makefile automatically searches for Intel Fortran (ifx) and C (icx) compilers.    
 
+### Call from Python
+The example `models/notebook/main.ipynb` is a Jupyter Notebook showing how PRIZMO can be integrated into a Notebook.    
+```
+cp models/notebook/main.ipynb .
+```
+Run with, e.g., VSCode using a virtual environment as kernel, with the one mentioned above: 
+```
+pip install virtualenv
+python -m venv env
+source env/bin/activate
+pip install -r requirements.txt
+```
+
 
 ## :warning: Known bugs/errors/warnings
 #### Missing XUVTOP warning
