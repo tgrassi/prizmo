@@ -116,7 +116,8 @@ make cbind
 ./test
 python plot.py
 ```
-The makefile automatically searches for Intel Fortran (ifx) and C (icx) compilers.    
+The connection between the C and the F90 part is controlled by `prizmo_c.f90` that uses isobinding.    
+The makefile automatically searches for Intel Fortran (ifx) and C (icx) compilers (gcc and gfortran if missing).    
 
 ### Call from Python
 The example [models/notebook/main.ipynb](models/notebook/main.ipynb) is a Jupyter Notebook showing how PRIZMO can be integrated into a Notebook.    
@@ -130,7 +131,9 @@ python -m venv env
 source env/bin/activate
 pip install -r requirements.txt
 ```
+The logic is the same as in C (isobinding), but the library `libprizmo.so` is called via Python's [ctypes](https://docs.python.org/3/library/ctypes.html).    
 
+Here is the logic of the calls for the different languages:
 ![plot](./assets/layers.png)
 
 
