@@ -7,7 +7,7 @@
 
 ![plot](./assets/disk.png)
 
-## :rocket: Quickstart
+## :rocket: Quickstart (Hello Disk!)
 - Clone the repository
 ```
 git clone git@github.com:tgrassi/prizmo.git
@@ -32,7 +32,7 @@ or
 sudo apt install gfortran  # NOTE: less tested
 ```
 
-- Run the preprocessor
+- Run the preprocessor (the first time it takes a few minutes...)
 ```
 cd src_py
 python prizmo.py
