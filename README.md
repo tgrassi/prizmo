@@ -133,7 +133,7 @@ pip install -r requirements.txt
 ```
 The logic is the same as in C (isobinding), but the library `libprizmo.so` is called via Python's [ctypes](https://docs.python.org/3/library/ctypes.html).    
 
-Here is the logic of the calls for the different languages:
+Here is the logic of the calls for the different languages:       
 ![plot](./assets/layers.png)
 
 
