@@ -32,7 +32,7 @@ or
 sudo apt install gfortran  # NOTE: less tested
 ```
 
-- Run the preprocessor
+- Run the preprocessor (the first time it takes a few minutes...)
 ```
 cd src_py
 python prizmo.py
