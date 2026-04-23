@@ -69,10 +69,10 @@ This is how the `plot_00013.png` should look like
 ## :wrench: Preprocessor
 Preprocessing is needed:
 
-* After cloning this repository
+* After cloning this repository (first use)
 * When changing chemistry (i.e., changing chemical network)
-* After changing data in the `data` folder
-* When changing dust or radiation parameters in `src_py/prizmo_commons.py`
+* When changing dust or radiation parameters in `src_py/prizmo_commons.py` (or in the keywords, see below)     
+* After changing data in the `data` folder (not a common procedure)
 
 How to preprocess:
 ```
@@ -97,7 +97,8 @@ This also applies if you experience weird behavior during runtime.
 
 ## :hammer: Compile and run
 ### Call from Fortran
-The example `models/disk/main.f90` is written in FORTRAN and simulates a static disk.    
+Fortran is the default assumption (since the PRIZMO backend is written in Fortran).    
+The Makefile is designed to use `main.f90` as the main program.    
 
 ```
 cp models/disk/* .
@@ -115,7 +116,8 @@ make cbind
 ./test
 python plot.py
 ```
-The makefile automatically searches for Intel Fortran (ifx) and C (icx) compilers.    
+The connection between the C and the F90 part is controlled by `prizmo_c.f90` that uses isobinding.    
+The makefile automatically searches for Intel Fortran (ifx) and C (icx) compilers (gcc and gfortran if missing).    
 
 ### Call from Python
 The example [models/notebook/main.ipynb](models/notebook/main.ipynb) is a Jupyter Notebook showing how PRIZMO can be integrated into a Notebook.    
@@ -129,6 +131,10 @@ python -m venv env
 source env/bin/activate
 pip install -r requirements.txt
 ```
+The logic is the same as in C (isobinding), but the library `libprizmo.so` is called via Python's [ctypes](https://docs.python.org/3/library/ctypes.html).    
+
+Here is the logic of the calls for the different languages:       
+![plot](./assets/layers.png)
 
 
 ## :warning: Known bugs/errors/warnings
