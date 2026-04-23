@@ -26,6 +26,13 @@ source env/bin/activate
 pip install -r requirements.txt
 ```
 
+- PRIZMO is written in Fortran, so you need to install [Intel OneAPI](https://www.intel.com/content/www/us/en/developer/tools/oneapi/hpc-toolkit-download.html?packages=fortran-essentials&fortran-essentials-os=windows&fortran-essentials-win=offline) (recommended)
+or     
+```
+sudo apt install gfortran
+```
+(less tested).
+
 - Run the preprocessor
 ```
 cd src_py
