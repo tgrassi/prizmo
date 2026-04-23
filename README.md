@@ -57,10 +57,14 @@ make
 - Plot the results      
 Open another terminal while the code is running...     
 ```
-python plot_jobs.py 10
+python plot_jobs.py 8
 ```
-where `10` is the number of processors you want to use for plotting.   
+where `8` is the number of processors you want to use for plotting.   
 It will create a set of PNG files for each time-step `plot_000000.png`, `plot_000001.png`, ...      
+
+This is how the `plot_00013.png` should look like     
+
+![plot](./assets/model.png)
 
 ## :wrench: Preprocessor
 Preprocessing is needed:
