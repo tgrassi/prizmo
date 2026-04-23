@@ -69,10 +69,10 @@ This is how the `plot_00013.png` should look like
 ## :wrench: Preprocessor
 Preprocessing is needed:
 
-* After cloning this repository
+* After cloning this repository (first use)
 * When changing chemistry (i.e., changing chemical network)
-* After changing data in the `data` folder
-* When changing dust or radiation parameters in `src_py/prizmo_commons.py`
+* When changing dust or radiation parameters in `src_py/prizmo_commons.py` (or in the keywords, see below)     
+* After changing data in the `data` folder (not a common procedure)
 
 How to preprocess:
 ```
@@ -97,7 +97,8 @@ This also applies if you experience weird behavior during runtime.
 
 ## :hammer: Compile and run
 ### Call from Fortran
-The example `models/disk/main.f90` is written in FORTRAN and simulates a static disk.    
+Fortran is the default assumption (since the PRIZMO backend is written in Fortran).    
+The Makefile is designed to use `main.f90` as the main program.    
 
 ```
 cp models/disk/* .
@@ -129,6 +130,8 @@ python -m venv env
 source env/bin/activate
 pip install -r requirements.txt
 ```
+
+![plot](./assets/layers.png)
 
 
 ## :warning: Known bugs/errors/warnings
