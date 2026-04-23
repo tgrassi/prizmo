@@ -7,7 +7,7 @@
 
 ![plot](./assets/disk.png)
 
-## :rocket: Quickstart
+## :rocket: Quickstart (Hello Disk!)
 - Clone the repository
 ```
 git clone git@github.com:tgrassi/prizmo.git
