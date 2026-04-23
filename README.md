@@ -86,10 +86,10 @@ PRIZMO's preprocessor has default values for many choices. However, these can be
 * energy_minmax - the minimum and maximum energies to use (eV)
 * dust_minmax - the minimum and maximum dust grain sizes to use (cm)
 * refInd_file - the file containing the refractive indices for the dust
-The command line arguments that were used are logged in a readme file in the runtime_data folder
+The command line arguments that were used are logged in a README file in the runtime_data folder
 
-Note: When you change radiation or dust properties, it is recommended that the contents of the runtime_data folder be deleted!
-This also applies if you experience weird behaviors during the runtime stage.
+Note: When you change radiation or dust properties, it is recommended that you delete the contents of the runtime_data folder!
+This also applies if you experience weird behavior during runtime.
 
 ## :hammer: Compile and run
 ### Call from Fortran
@@ -114,7 +114,7 @@ python plot.py
 The makefile automatically searches for Intel Fortran (ifx) and C (icx) compilers.    
 
 ### Call from Python
-The example `models/notebook/main.ipynb` is a Jupyter Notebook showing how PRIZMO can be integrated into a Notebook.    
+The example [models/notebook/main.ipynb](models/notebook/main.ipynb) is a Jupyter Notebook showing how PRIZMO can be integrated into a Notebook.    
 ```
 cp models/notebook/main.ipynb .
 ```
