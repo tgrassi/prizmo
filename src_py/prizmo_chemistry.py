@@ -28,6 +28,7 @@ def prepare(fname="../networks/test.dat", main=False, speciesList=None):
     species = []
     photo_limits = []
     verbatim_reactions = []
+    dummy_species = []
     prototype = prototype_vars = prototype_idxs = None
     prototype_pragma = prototype_define = ""
     in_custom_function = False
@@ -48,6 +49,14 @@ def prepare(fname="../networks/test.dat", main=False, speciesList=None):
 
         if line.startswith("VARIABLES{"):
             in_custom_variables = True
+            continue
+
+        if line.startswith("DUMMY{"):
+            if not line.endswith("}"):
+                print("Error: DUMMY should be in one line, example: DUMMY{H, H2, CO}")
+                sys.exit()
+            dummy_species += line.replace("DUMMY{", "").replace("}", "").split(",")
+            dummy_species = [x.strip() for x in dummy_species]
             continue
 
         if line == "}":
@@ -98,6 +107,10 @@ def prepare(fname="../networks/test.dat", main=False, speciesList=None):
         species += rr + pp
         i += 1
 
+    if dummy_species is not None:
+        print("Adding dummy species:", ", ".join(dummy_species))
+        species += [sp2idx(x) for x in dummy_species]
+
     # check_reverse(reactants, products)
 
     species = np.sort(np.unique(species))
@@ -111,6 +124,8 @@ def prepare(fname="../networks/test.dat", main=False, speciesList=None):
         for i, pp in enumerate(products):
             for _ in range(pp.count(sp)):
                 ode += " + flux(%d)" % (i + 1)
+        if ode.endswith(" = "):
+            ode += "0d0"
         ode += "\n"
 
     species_names = [idx2sp(x) for x in species]
