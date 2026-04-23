@@ -5,10 +5,10 @@ import numpy as np
 
 
 class Prizmo:
-    def __init__(self, preprocess=True, arguments=None):
+    def __init__(self, preprocess=True, arguments=None, network_text=None):
 
         if preprocess:
-            self.preprocessor(arguments)
+            self.preprocessor(arguments, network_text=network_text)
             self.compile()
 
         self.lib = cdll.LoadLibrary("./libprizmo.so")
@@ -31,15 +31,35 @@ class Prizmo:
         os.system("make clean")
 
 
-    def preprocessor(self, arguments=None):
+    def preprocessor(self, arguments=None, network_text=None):
         if not os.getcwd().endswith("/src_py"):
             os.chdir("src_py")
+
+        # to avoid key check issues, e.g. if "chemNet" is in arguments
+        if arguments is None:
+            arguments = {}
 
         args = ""
         if arguments:
             args = " ".join(["--{} {}".format(k, v) for k, v in arguments.items()])
 
+        if "chemNet" in arguments and network_text is not None:
+            raise ValueError("Cannot specify both 'chemNet' in arguments and 'network_text'. Please choose one.")
+
+        if network_text is not None:
+            # generate temporary file with random hash name to avoid conflicts
+            fname = "temp_network_{}.dat".format(np.random.randint(1e6))
+            tmp_path = os.path.join("../networks", fname)
+            with open(tmp_path, "w") as f:
+                f.write(network_text)
+            args += " --chemNet {}".format(tmp_path)
+
         os.system("python prizmo.py " + args)
+
+        # clean up temporary file if it was created
+        if network_text is not None:
+            os.remove(tmp_path)
+
 
     def compile(self):
 
@@ -69,6 +89,12 @@ class Prizmo:
         self.lib.prizmo_get_electrons_c.argtypes = [POINTER(c_double), POINTER(c_double)]
         self.lib.prizmo_get_electrons_c.restype = None
 
+        self.lib.prizmo_set_solve_thermo_c.argtypes = [POINTER(c_int)]
+        self.lib.prizmo_set_solve_thermo_c.restype = None
+
+        self.lib.prizmo_set_solve_chemistry_c.argtypes = [POINTER(c_int)]
+        self.lib.prizmo_set_solve_chemistry_c.restype = None
+
     def load_variables(self):
         self.energy = np.loadtxt("runtime_data/energy.dat")
         self.nphoto = len(self.energy)
@@ -95,7 +121,7 @@ class Prizmo:
             raise ValueError("Species {} not found in species list.".format(sp))
 
 
-    def evolve(self, x, Tgas, jflux, dt):
+    def evolve(self, x, Tgas, jflux, dt, solve_thermo=True, solve_chemistry=True):
         x = (c_double * len(x))(*x)
         jflux = (c_double * len(jflux))(*jflux)
 
@@ -103,6 +129,9 @@ class Prizmo:
 
         ierr = 0
         verboseChem = 0
+
+        self.lib.prizmo_set_solve_thermo_c(c_int(1 if solve_thermo else 0))
+        self.lib.prizmo_set_solve_chemistry_c(c_int(1 if solve_chemistry else 0))
 
         self.lib.prizmo_evolve_c(
             x,

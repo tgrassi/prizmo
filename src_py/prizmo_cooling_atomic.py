@@ -108,13 +108,15 @@ def prepare_atomic_cooling_tables(species_indexes):
 
     colors = ["r", "g", "b", "tab:orange"]
     lss = ["-", ":", "--", "-."]
+    skips_count = 0
     for a in atoms:
         ii = avail_coolants.index(a)
         plt.clf()
         fname = "../runtime_data/cool_%s.dat" % a
         fname_database = "../data/atomic_cooling/cool_%s.dat" % a
         if os.path.isfile(fname):
-            print("skipping, cooling file found", fname)
+            # print("skipping, cooling file found", fname)
+            skips_count += 1
             continue
         if os.path.isfile(fname_database):
             print("skipping, cooling file found in data", fname_database)
@@ -167,6 +169,8 @@ def prepare_atomic_cooling_tables(species_indexes):
         else:
             plt.close()
 
+    if skips_count > 0:
+        print("WARNING: Skipped %d cooling processes, files already exist." % skips_count)
 
 def emission(method, avail_coolants, a, dn, di, d, t):
     if method[avail_coolants.index(a)] == "CHIANTI":
@@ -244,6 +248,7 @@ def prepare_xlevel(data, atom, nlevels, H2_inc, nt=10000):
 
     has_ortho_para = False
 
+    skips_count = 0
     for collider in data["rates"]:
         if (collider == 'H2or' or collider =='H2pa') and not H2_inc:
             continue
@@ -267,7 +272,8 @@ def prepare_xlevel(data, atom, nlevels, H2_inc, nt=10000):
                 ffname = "../runtime_data/cool_%s_%s_%s.dat" % (atom, collider, kname)
                 vnames.append(kname)
                 if os.path.isfile(ffname):
-                    print("skipping, cooling file found", ffname)
+                    #print("skipping, cooling file found", ffname)
+                    skips_count += 1
                     continue
                 fhk[j][i] = open(ffname, "w")
 
@@ -319,6 +325,9 @@ def prepare_xlevel(data, atom, nlevels, H2_inc, nt=10000):
                 kfit_name = "kfit_%s(%d) * x(%s)" % (spj, count + 1, idx)
                 aa[i][j].append(kfit_name)
                 count += 1
+
+    if skips_count > 0:
+        print("WARNING: Skipped %d cooling tables, files already exist." % skips_count)
 
     fun = "! *****************\n"
     fun += "function atomic_cooling_%s(x, log_Tgas) result(cool)\n" % sp2spj(atom)
