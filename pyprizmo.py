@@ -1,24 +1,30 @@
 
-import os
 from ctypes import cdll, POINTER, c_double, c_int
 import numpy as np
+import os
+import uuid
 
 
 class Prizmo:
     def __init__(self, preprocess=True, arguments=None, network_text=None):
 
+        self.lib_name = "libprizmo.so"
+
         if preprocess:
+            self.lib_name = f"libprizmo_{uuid.uuid4().hex}.so"
             self.preprocessor(arguments, network_text=network_text)
             self.compile()
 
-        self.lib = cdll.LoadLibrary("./libprizmo.so")
+        self.lib = cdll.LoadLibrary(f"./{self.lib_name}")
+
+        if preprocess:
+            os.rename(self.lib_name, "libprizmo.so")
 
         self.init_bindings()
 
         self.load_variables()
 
         self.lib.prizmo_init_c()
-
 
     def cleaner(self):
         if not os.getcwd().endswith("/src_py"):
@@ -29,7 +35,6 @@ class Prizmo:
             os.chdir("..")
         print(os.getcwd())
         os.system("make clean")
-
 
     def preprocessor(self, arguments=None, network_text=None):
         if not os.getcwd().endswith("/src_py"):
@@ -60,8 +65,9 @@ class Prizmo:
         if network_text is not None:
             os.remove(tmp_path)
 
-
     def compile(self):
+
+        os.environ["BUILD_LIB"] = self.lib_name
 
         if os.getcwd().endswith("/src_py"):
             os.chdir("..")
@@ -113,6 +119,7 @@ class Prizmo:
         self.species = open("runtime_data/species.dat").readlines()
         self.species = [x.strip() for x in self.species if x.strip()]
         self.nspecies = len(self.species)
+        print("Loaded {} species and {} reactions.".format(self.nspecies, self.nreactions))
 
     def species2index(self, sp):
         if sp in self.species:

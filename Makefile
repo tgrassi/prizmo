@@ -1,5 +1,6 @@
 #executable name
 exe = test
+BUILD_LIB_ID ?= libprizmo.so
 
 -include Makefile_pragmas
 
@@ -102,11 +103,11 @@ cbind_profile: cbind
 lib: fswitch = $(switchOPT) -fPIC -shared
 lib: cswitch = $(cswitchOPT) -fPIC -shared
 lib: $(objs) prizmo_c.o
-	$(cc) $(objs) prizmo_c.o -fPIC -shared  -o libprizmo.so $(switchCLIB) $(lib)
+	$(cc) $(objs) prizmo_c.o -fPIC -shared  -o $(BUILD_LIB) $(switchCLIB) $(lib)
 
 #clean target
 clean:
-	rm -f *.o *.mod *__genmod.f90 *~ *.i90 *.i $(exe) libprizmo.so
+	rm -f *.o *.mod *__genmod.f90 *~ *.i90 *.i $(exe) $(BUILD_LIB)
 
 .PHONY: clean
 
