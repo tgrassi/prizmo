@@ -6,14 +6,14 @@ import uuid
 
 
 class Prizmo:
-    def __init__(self, preprocess=True, arguments=None, network_text=None):
+    def __init__(self, preprocess=True, arguments=None, network_text=None, debug=False):
 
         self.lib_name = "libprizmo.so"
 
         if preprocess:
             self.lib_name = f"libprizmo_{uuid.uuid4().hex}.so"
             self.preprocessor(arguments, network_text=network_text)
-            self.compile()
+            self.compile(debug=debug)
 
         self.lib = cdll.LoadLibrary(f"./{self.lib_name}")
 
@@ -44,12 +44,16 @@ class Prizmo:
         if arguments is None:
             arguments = {}
 
-        args = ""
-        if arguments:
-            args = " ".join(["--{} {}".format(k, v) for k, v in arguments.items()])
+        if "energy_minmax" in arguments:
+            if type(arguments["energy_minmax"]) == list:
+                arguments["energy_minmax"] = " ".join(map(str, arguments["energy_minmax"]))
 
         if "chemNet" in arguments and network_text is not None:
             raise ValueError("Cannot specify both 'chemNet' in arguments and 'network_text'. Please choose one.")
+
+        args = ""
+        if arguments:
+            args = " ".join(["--{} {}".format(k, v) for k, v in arguments.items()])
 
         if network_text is not None:
             # generate temporary file with random hash name to avoid conflicts
@@ -59,13 +63,15 @@ class Prizmo:
                 f.write(network_text)
             args += " --chemNet {}".format(tmp_path)
 
-        os.system("python prizmo.py " + args)
+        ret = os.system("python prizmo.py " + args)
+        if ret != 0:
+            raise RuntimeError("Preprocessing failed with return code {}".format(ret))
 
         # clean up temporary file if it was created
         if network_text is not None:
             os.remove(tmp_path)
 
-    def compile(self):
+    def compile(self, debug):
 
         os.environ["BUILD_LIB"] = self.lib_name
 
@@ -73,7 +79,15 @@ class Prizmo:
             os.chdir("..")
         print(os.getcwd())
         os.system("make clean")
-        os.system("make lib")
+
+        if debug:
+            ret = os.system("make lib_debug")
+        else:
+            ret = os.system("make lib")
+
+        if ret != 0:
+            raise RuntimeError("Preprocessing failed with return code {}".format(ret))
+
 
     def init_bindings(self):
 
@@ -88,6 +102,9 @@ class Prizmo:
 
         self.lib.prizmo_get_cooling_array_c.argtypes = [POINTER(c_double), POINTER(c_double), POINTER(c_double), POINTER(c_double), POINTER(c_double)]
         self.lib.prizmo_get_cooling_array_c.restype = None
+
+        self.lib.prizmo_get_heating_array_c.argtypes = [POINTER(c_double), POINTER(c_double), POINTER(c_double), POINTER(c_double), POINTER(c_double)]
+        self.lib.prizmo_get_heating_array_c.restype = None
 
         self.lib.prizmo_get_tdust_c.argtypes = [POINTER(c_double), POINTER(c_double), POINTER(c_double), POINTER(c_double)] #(x, Tgas, Tdust, jflux)
         self.lib.prizmo_get_tdust_c.restype = None
@@ -154,13 +171,27 @@ class Prizmo:
     def set_crate(self, crate):
         self.lib.prizmo_set_crate_c(c_double(crate))
 
-    def get_cooling_array(self, x, Tgas, jflux):
+    def get_tdust(self, x, Tgas, jflux):
         x = (c_double * len(x))(*x)  # Convert to a C array
         jflux = (c_double * len(jflux))(*jflux)  # Convert to a C array
 
-        Tdust = 0e0 # dummy value
-        # get the Tdust
-        self.lib.prizmo_get_tdust_c(x, c_double(Tgas), c_double(Tdust), jflux)
+        Tdust = c_double(0.0)  # Initialize a variable to hold the dust temperature
+
+        self.lib.prizmo_get_tdust_c(
+            x,
+            c_double(Tgas),
+            Tdust,
+            jflux
+        )
+
+        return Tdust.value  # Return the dust temperature as a Python float
+
+    def get_cooling_array(self, x, Tgas, jflux):
+
+        Tdust = self.get_tdust(x, Tgas, jflux)
+
+        x = (c_double * len(x))(*x)  # Convert to a C array
+        jflux = (c_double * len(jflux))(*jflux)  # Convert to a C array
 
         cools = [0.0] * 5  # Initialize a list for cooling values
         cools = (c_double * len(cools))(*cools)  # Create an array to hold cooling values
@@ -175,6 +206,25 @@ class Prizmo:
 
         return np.array(list(cools))  # convert to a Python list
 
+    def get_heating_array(self, x, Tgas, jflux):
+
+        Tdust = self.get_tdust(x, Tgas, jflux)
+
+        x = (c_double * len(x))(*x)  # Convert to a C array
+        jflux = (c_double * len(jflux))(*jflux)  # Convert to a C array
+
+        heats = [0.0] * 4  # Initialize a list for heating values
+        heats = (c_double * len(heats))(*heats)  # Create an array to hold heating values
+
+        self.lib.prizmo_get_heating_array_c(
+            x,
+            c_double(Tgas),
+            c_double(Tdust),
+            jflux,
+            heats
+        )
+
+        return np.array(list(heats))  # convert to a Python list
 
     def get_electrons(self, x):
         x = (c_double * len(x))(*x)  # Convert to a C array
