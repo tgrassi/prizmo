@@ -9,6 +9,9 @@ contains
     real*8::ncrn, ncrd1, ncrd2, yH, yH2, ncr, hf, rdiss
     real*8::heat
 
+    ! this is the default if the dissociation rate is not in the network
+    Rdiss = 0d0
+
     !! PREPROCESS_H2DISS
     !! PREPROCESS_END
 

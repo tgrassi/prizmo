@@ -1,0 +1,6 @@
+C + E -> C+ + E + E                      [] 6.850000e-08 * 1e0 / (1.930000e-01 + 1.130000e+01 * invTe) * 1.833452e+00 * invTe**(0.25) * exp(-11.30 * invTe)
+
+C+ + E -> C                              [] 4.700000e-13 / Tgas14**(0.62)
+
+# these dummy species are necessary because of internal structure of the code, but they are not used in the network
+DUMMY{H, H2, H+, CO, O, O+}

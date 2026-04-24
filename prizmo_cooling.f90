@@ -33,7 +33,7 @@ contains
 
     log_ngas = log10(sum(x))
     log_Tgas = log10(Tgas)
-    log_Hnuclei = log10(get_Hnuclei(x))
+    log_Hnuclei = log10(get_Hnuclei(x) + 1d-40)
 
     cools(1) = cooling_atomic(x, log_Tgas, Tgas)
     cools(2) = cooling_chemical(x, fluxes, Tgas)

@@ -17,7 +17,8 @@ contains
     y = yin
     Tgas = max(y(idx_tgas), 3d0)  ! FIXME
 
-    ntot = y(idx_H2) + y(idx_H) !sum(max(y(1:nspecies), 1d-40))
+    !ntot = y(idx_H2) + y(idx_H) + y(idx_Hj) !sum(max(y(1:nspecies), 1d-40))
+    ntot = sum(y(1:nspecies))
 
     log_tgas = log10(Tgas)
     log_ngas = log10(ntot)
