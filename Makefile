@@ -105,9 +105,15 @@ lib: cswitch = $(cswitchOPT) -fPIC -shared
 lib: $(objs) prizmo_c.o
 	$(cc) $(objs) prizmo_c.o -fPIC -shared  -o $(BUILD_LIB) $(switchCLIB) $(lib)
 
+lib_debug: fswitch = $(switchDBG) -fPIC -shared
+lib_debug: cswitch = $(switchCDBG) -fPIC -shared
+lib_debug: $(objs) prizmo_c.o
+	$(cc) $(objs) prizmo_c.o -fPIC -shared  -o $(BUILD_LIB) $(switchCLIB) $(lib)
+
+
 #clean target
 clean:
-	rm -f *.o *.mod *__genmod.f90 *~ *.i90 *.i $(exe) $(BUILD_LIB)
+	rm -f *.o *.mod *__genmod.f90 *~ *.i90 *.i $(exe) $(BUILD_LIB) libprizmo.so
 
 .PHONY: clean
 
