@@ -118,6 +118,9 @@ class Prizmo:
         self.lib.prizmo_set_solve_chemistry_c.argtypes = [POINTER(c_int)]
         self.lib.prizmo_set_solve_chemistry_c.restype = None
 
+        self.lib.prizmo_rt_c.argtypes = [POINTER(c_double), POINTER(c_double), POINTER(c_double), POINTER(c_double)]
+        self.lib.prizmo_rt_c.restype = None
+
     def load_variables(self):
         self.energy = np.loadtxt("runtime_data/energy.dat")
         self.nphoto = len(self.energy)
@@ -237,3 +240,14 @@ class Prizmo:
         )
 
         return ne.value  # Return the electron density as a Python float
+
+    def RT(self, x, Tgas, jflux, ds):
+        x = (c_double * len(x))(*x)  # Convert to a C array
+        jflux = (c_double * len(jflux))(*jflux)  # Convert to a C array
+
+        self.lib.prizmo_rt_c(x,
+                             c_double(Tgas),
+                             jflux,
+                             c_double(ds))
+
+        return np.array(list(jflux))
