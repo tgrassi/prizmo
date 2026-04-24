@@ -252,7 +252,7 @@ def prepare_external_spec(energy, spectrum, L_X=1e30, X_lo=1e2, X_hi=1e4, rstar=
             bfield = 1e1**F_interp(np.log10(energy * erg2ev))
         X_band = (energy * erg2ev > X_lo) * (energy * erg2ev < X_hi)
         L_band = trapz(bfield[X_band], energy[X_band]/hplanck)
-        Multiplier = L_X/L_band
+        Multiplier = L_X / (L_band + 1e-40)
         bfield *= Multiplier
         bfield /= (4*np.pi**2*rstar**2)
     elif fluxUnits=='photon':
