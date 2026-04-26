@@ -1,8 +1,9 @@
 
-from ctypes import cdll, POINTER, c_double, c_int
 import numpy as np
 import os
 import uuid
+from ctypes import cdll, POINTER, c_double, c_int
+from glob import glob
 
 
 class Prizmo:
@@ -100,6 +101,9 @@ class Prizmo:
         self.lib.prizmo_set_crate_c.argtypes = [POINTER(c_double)]
         self.lib.prizmo_set_crate_c.restype = None
 
+        self.lib.prizmo_set_d2g_c.argtypes = [POINTER(c_double)]
+        self.lib.prizmo_set_d2g_c.restype = None
+
         self.lib.prizmo_get_cooling_array_c.argtypes = [POINTER(c_double), POINTER(c_double), POINTER(c_double), POINTER(c_double), POINTER(c_double)]
         self.lib.prizmo_get_cooling_array_c.restype = None
 
@@ -125,6 +129,9 @@ class Prizmo:
         self.energy = np.loadtxt("runtime_data/energy.dat")
         self.nphoto = len(self.energy)
 
+        erg2ev = 6.241509074e11
+        self.energy_ev = self.energy * erg2ev
+
         clight = 2.99792458e10  # cm/s
         hplanck = 6.62607015e-27  # erg s
         self.wavelength_cm = clight * hplanck / self.energy
@@ -139,7 +146,13 @@ class Prizmo:
         self.species = open("runtime_data/species.dat").readlines()
         self.species = [x.strip() for x in self.species if x.strip()]
         self.nspecies = len(self.species)
-        print("Loaded {} species and {} reactions.".format(self.nspecies, self.nreactions))
+
+        self.xsecs = {}
+        for g in glob("runtime_data/photo_xsecs_*.dat"):
+            rr = g.replace("runtime_data/photo_xsecs_", "").replace(".dat", "")
+            rr = rr.replace("__", " -> ").replace("_", " + ")
+            self.xsecs[rr] = np.loadtxt(g)
+
 
     def species2index(self, sp):
         if sp in self.species:
@@ -173,6 +186,9 @@ class Prizmo:
 
     def set_crate(self, crate):
         self.lib.prizmo_set_crate_c(c_double(crate))
+
+    def set_d2g(self, d2g):
+        self.lib.prizmo_set_d2g_c(c_double(d2g))
 
     def get_tdust(self, x, Tgas, jflux):
         x = (c_double * len(x))(*x)  # Convert to a C array

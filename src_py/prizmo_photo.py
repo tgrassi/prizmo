@@ -108,7 +108,9 @@ def prepare(photo_limits, species):
                                "file": name_file + ".dat"}
 
     energy = find_energy(data_all, photo_limits)
+
     save_xsecs(energy, data_all)
+
     if "BB@" in radiation_type:
         print("field: {} K blackbody".format(tbb))
         tbb = float(radiation_type.replace("BB@", ""))
@@ -170,13 +172,14 @@ def find_energy(data_all, photo_limits):
     else:
         energy = np.linspace(emin, emax, nphoto_left)
 
-    # Add photo_limits into energy list
-    energy = np.sort(np.concatenate([energy, photo_limits]))
     # Add fuv energies into energy list
     if fuv_energy1>emin:
         energy = np.sort(np.concatenate([energy, [fuv_energy1]]))
     if fuv_energy2>emin:
         energy = np.sort(np.concatenate([energy, [fuv_energy2]]))
+
+    # Add photo_limits into energy list
+    energy = np.sort(np.concatenate([energy, photo_limits]))
 
     if len(energy) != nphoto:
         sys.exit("ERROR: number of created energy points is different from expected!")
