@@ -92,7 +92,12 @@ PRIZMO's preprocessor has default values for many choices. However, these can be
 * refInd_file - the file containing the refractive indices for the dust
 The command line arguments that were used are logged in a README file in the runtime_data folder
 
-Note: When you change radiation or dust properties, it is recommended that you delete the contents of the runtime_data folder!
+## :package: Cached data
+As you probably noticed, the first run of the preprocessor stage is relatively long (a few minutes).    
+For this reason, after the first run, the preprocessor reuses some of the tables.   
+These are stored in the `runtime_data` folder.      
+
+However, when you change radiation or dust properties, it is recommended to first delete the contents of the `runtime_data` folder.    
 This also applies if you experience weird behavior during runtime.
 
 ## :hammer: Compile and run
