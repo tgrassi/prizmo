@@ -10,7 +10,7 @@
 ## :rocket: Quickstart (Hello Disk!)
 - Clone the repository
 ```
-git clone git@github.com:tgrassi/prizmo.git
+git clone https://github.com/tgrassi/prizmo.git
 cd prizmo
 ```
 
