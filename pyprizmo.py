@@ -7,13 +7,13 @@ from glob import glob
 
 
 class Prizmo:
-    def __init__(self, preprocess=True, arguments=None, network_text=None, debug=False):
+    def __init__(self, preprocess=True, arguments=None, network_text=None, debug=False, python_executable="python"):
 
         self.lib_name = "libprizmo.so"
 
         if preprocess:
             self.lib_name = f"libprizmo_{uuid.uuid4().hex}.so"
-            self.preprocessor(arguments, network_text=network_text)
+            self.preprocessor(arguments, network_text=network_text, python_executable=python_executable)
             self.compile(debug=debug)
 
         self.lib = cdll.LoadLibrary(f"./{self.lib_name}")
@@ -37,7 +37,7 @@ class Prizmo:
         print(os.getcwd())
         os.system("make clean")
 
-    def preprocessor(self, arguments=None, network_text=None):
+    def preprocessor(self, arguments=None, network_text=None, python_executable="python"):
         if not os.getcwd().endswith("/src_py"):
             os.chdir("src_py")
 
@@ -64,7 +64,7 @@ class Prizmo:
                 f.write(network_text)
             args += " --chemNet {}".format(tmp_path)
 
-        ret = os.system("python prizmo.py " + args)
+        ret = os.system("{} prizmo.py {}".format(python_executable, args))
         if ret != 0:
             raise RuntimeError("Preprocessing failed with return code {}".format(ret))
 
