@@ -8,6 +8,10 @@ from bhmie import bhmie_qabs
 from tqdm import tqdm
 import os
 import sys
+try:
+    from scipy.integrate import trapz
+except ImportError:
+    from scipy.integrate import trapezoid as trapz
 
 # compute table of Tdust as function of Ea (absorption integral against Qabs), Tgas, and ngas
 # from this compute also table cooling (should be multiplied by mu and by dust-to-gas mass ratio).
@@ -195,7 +199,7 @@ def load_eps():
         for j, a in enumerate(arange):
             fa[j] = a**2 * a**pslope * bhmie_qabs(2e0 * np.pi / wl[i] * a, complex(nref[i], kref[i]))
         # integrate along dust size
-        fe[i] = np.trapz(fa, arange)
+        fe[i] = trapz(fa, arange)
 
     # plot for debug
     plt.loglog(wl, fe)
@@ -236,7 +240,7 @@ def make_Bint(energy, Cabs):
     trange = np.logspace(-2, 6, nt)
     ft = np.zeros_like(trange)
     for i, t in enumerate(trange):
-        ft[i] = np.trapz(B(energy, t) * 1e1 ** Cabs(loge), energy) + 1e-80
+        ft[i] = trapz(B(energy, t) * 1e1 ** Cabs(loge), energy) + 1e-80
     print("4*Bint/h, (min/max)", 4 * ft.min() / hplanck, 4*ft.max() / hplanck)
     return interp1d(np.log10(trange), np.log10(ft))
 

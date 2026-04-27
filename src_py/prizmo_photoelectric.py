@@ -7,6 +7,10 @@ from prizmo_commons import hplanck, echarge2, wpot, clight, amin, amax, pslope, 
     ev2erg, Zmin, Zmax, kboltzmann, pmass, emass, print_title, plotOn, refInd_file
 from bhmie import bhmie_qabs
 from tqdm import tqdm
+try:
+    from scipy.integrate import trapz
+except ImportError:
+    from scipy.integrate import trapezoid as trapz
 
 
 # this routine produces three files
@@ -127,7 +131,7 @@ def get_jion(Z, Zpartner, mpartner, tgas, arange):
                      * get_jtilde(a, Z, Zpartner, tgas) for a in arange])
 
     anorm = 4. / 3. * np.pi * rho_bulk * (amax**p4 - amin**p4) / p4
-    return np.pi * np.trapz(fint, arange) / anorm
+    return np.pi * trapz(fint, arange) / anorm
 
 
 def load_optical(arange, user_energy):
@@ -188,7 +192,7 @@ def get_jpe(E, Z, get_qabs, get_eps2, get_y0_WD06, arange):
         sys.exit("min(Jpe) < 0, E: %e, Z: %d" % (E, Z))
 
     anorm = 4. / 3. * np.pi * rho_bulk * (amax**p4 - amin**p4) / p4
-    return np.pi * np.trapz(fint, arange) / anorm
+    return np.pi * trapz(fint, arange) / anorm
 
     # idx = energy >= get_epet(a, Z)
     # erange = energy[idx]
@@ -298,7 +302,7 @@ def get_jpd(E, Z, arange):
         sys.exit("min(Jpd) < 0, E: %e, Z: %d" % (E, Z))
 
     anorm = 4. / 3. * np.pi * rho_bulk * (amax**p4 - amin**p4) / p4
-    return np.pi * np.trapz(fint, arange) / anorm
+    return np.pi * trapz(fint, arange) / anorm
 
 
 def get_epdt(E, a, Z):
@@ -368,7 +372,7 @@ def get_jpe_heating(E, Z, get_qabs, get_eps2, get_y0_WD06, arange):
                      * get_pet_heating_int(E, a, Z) / E for a in arange])
 
     anorm = 4. / 3. * np.pi * rho_bulk * (amax**p4 - amin**p4) / p4
-    return np.pi * np.trapz(fint * fp, arange) / anorm
+    return np.pi * trapz(fint * fp, arange) / anorm
 
 
 def get_pet_heating_int(E, a, Z):
@@ -383,7 +387,7 @@ def get_pet_heating_int(E, a, Z):
     if emin > emax:
         sys.exit("ERROR: emax < emin!")
     erange = np.logspace(np.log10(emin), np.log10(emax), 300)
-    peint = np.trapz([get_fe0(x, a, Z, el=emin, eh=emax) / get_y2(x, a, Z, el=emin, eh=emax) * x for x in erange],
+    peint = trapz([get_fe0(x, a, Z, el=emin, eh=emax) / get_y2(x, a, Z, el=emin, eh=emax) * x for x in erange],
                      erange)
     if peint < 0e0:
         sys.exit("ERROR: negative get_pet_heating_int! %.18e %.18e %d" % (E, a, Z))
@@ -398,7 +402,7 @@ def get_jpd_heating(E, Z, arange):
     fint = np.array([a**pslope * get_sigma_pdt(E, a, Z) * (E - get_epdt(E, a, Z) + get_emin(a, Z)) for a in arange])
 
     anorm = 4. / 3. * np.pi * rho_bulk * (amax**p4 - amin**p4) / p4
-    return np.pi * np.trapz(fint * fp, arange) / anorm
+    return np.pi * trapz(fint * fp, arange) / anorm
 
 
 def get_jion_cooling(Z, Zpartner, mpartner, tgas, arange):
@@ -409,7 +413,7 @@ def get_jion_cooling(Z, Zpartner, mpartner, tgas, arange):
                      * get_lambda_tilde(a, Z, Zpartner, tgas) for a in arange])
 
     anorm = 4. / 3. * np.pi * rho_bulk * (amax**p4 - amin**p4) / p4
-    return np.pi * np.trapz(fint, arange) / anorm * kboltzmann * tgas
+    return np.pi * trapz(fint, arange) / anorm * kboltzmann * tgas
 
 
 def get_lambda_tilde(a, Z, Zpartner, tgas):
