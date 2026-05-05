@@ -118,12 +118,19 @@ def prepare(fname="../networks/test.dat", main=False, speciesList=None):
     ode = ""
     for sp in species:
         ode += "dy(%s) = " % sp
+        ode_elements = 0
         for i, rr in enumerate(reactants):
             for _ in range(rr.count(sp)):
+                if ode_elements % 10 == 9:
+                    ode += " &\n"
                 ode += " - flux(%d)" % (i + 1)
+                ode_elements += 1
         for i, pp in enumerate(products):
             for _ in range(pp.count(sp)):
+                if ode_elements % 10 == 9:
+                    ode += " &\n"
                 ode += " + flux(%d)" % (i + 1)
+                ode_elements += 1
         if ode.endswith(" = "):
             ode += "0d0"
         ode += "\n"
@@ -393,15 +400,35 @@ def parse_attenuation(i, krate, rr, verbatim):
 
 
 def parse_xsecs(i, krate, rr_names, pp_names):
-    if krate.split(",")[0].strip() != "PHOTO":
+    # if krate.split(",")[0].strip() != "PHOTO":
+    #     return ""
+    part = krate.split(",")[0].strip()
+    if "PHOTO" not in part:
         return ""
-    fname_rate = get_fname_rate(rr_names, pp_names)
-    k = "photo_xsecs(:, %d) = load_photo_xsecs(\"photo_xsecs_%s.dat\")\n" % (i, fname_rate)
+
+    # if the reaction has a PHOTO{...} part, it means that the cross-section file name is different from the default one (which is based on the reaction formula)
+    if "PHOTO{" in part:
+        # read the reaction verbatim inside PHOTO{...}
+        reaction_alt = part.split("PHOTO{")[1].split("}")[0]
+        # find the reactants and products names from the reaction verbatim
+        rr_names_alt = [x.strip() for x in reaction_alt.split(" -> ")[0].split(" + ")]
+        pp_names_alt = [x.strip() for x in reaction_alt.split(" -> ")[1].split(" + ")]
+        fname_rate = get_fname_rate(rr_names_alt, pp_names_alt)
+        verbatim = get_verbatim_rate(rr_names, pp_names)
+        print("Custom photo cross-section for '%s', using %s instead" % (verbatim, reaction_alt))
+    else:
+        fname_rate = get_fname_rate(rr_names, pp_names)
+
+    k = "! %s\n" % get_verbatim_rate(rr_names, pp_names)
+    k += "photo_xsecs(:, %d) = load_photo_xsecs(\"photo_xsecs_%s.dat\")\n" % (i, fname_rate)
+
     return k
 
 
 def parse_krate_photo(i, krate, verbatim):
-    if krate.split(",")[0].strip() != "PHOTO":
+    # if krate.split(",")[0].strip() != "PHOTO":
+    #     return ""
+    if "PHOTO" not in krate.split(",")[0].strip():
         return ""
 
     if verbatim.strip() == "H2 -> H + H":
@@ -419,7 +446,9 @@ def parse_krate_photo(i, krate, verbatim):
 
 
 def parse_photoheating_rate(i, krate, verbatim):
-    if krate.split(",")[0].strip() != "PHOTO":
+    # if krate.split(",")[0].strip() != "PHOTO":
+    #     return ""
+    if "PHOTO" not in krate.split(",")[0].strip():
         return ""
 
     if verbatim.strip() == "H2 -> H + H":
@@ -493,12 +522,21 @@ def is_dust_freezing(verbatim):
 
 
 def parse_line(line):
+    line_org = line.strip()
     if "[" in line:
-        line = line.replace("[", ";").replace("]", ";").replace("->", ";")
-        rr, pp, _, kk = line.split(";")
+        line = line.replace("[", ";").replace("]", ";").replace("->", ";", 1)
+        try:
+            rr, pp, _, kk = line.split(";")
+        except ValueError as e:
+            print("Error parsing line: %s" % line_org, e)
+            sys.exit(1)
     else:
         line = line.replace("->", ";")
-        rr, pp, kk = line.split(";")
+        try:
+            rr, pp, kk = line.split(";")
+        except ValueError as e:
+            print("Error parsing line: %s" % line_org, e)
+            sys.exit(1)
     rr = parse_species(rr)
     pp = parse_species(pp)
 

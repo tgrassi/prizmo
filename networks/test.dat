@@ -51,3 +51,7 @@ end function ftest
 # not real rates, just for test
 H3+ + E -> H2 + H [] ftest(Tgas, x, 1d-10) * myvar1
 O+ + E -> O [] ftest(Tgas, x, 1d-10) * myvar2
+
+# use a different cross section
+CH -> C + H    [] PHOTO, 1e99
+CO -> C + O    [] PHOTO{CH -> C + H}, 1e99
