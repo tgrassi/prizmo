@@ -83,6 +83,7 @@ type(fit3d_data(n1=cool_CO_tab_n1, n2=cool_CO_tab_n2, n3=cool_CO_tab_n3))::cool_
 
 
 real*8::kall(nreactions)
+real*8::kall_photo(nreactions)
 real*8::kall_heat(nreactions)
 real*8::photo_xsecs(nphoto, nreactions)
 real*8::energy_threshold(nreactions)

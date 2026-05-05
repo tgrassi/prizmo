@@ -399,6 +399,23 @@ def parse_attenuation(i, krate, rr, verbatim):
     return att
 
 
+def parse_alternate_photo(krate):
+
+        # read the reaction verbatim inside PHOTO{...}
+        photo_argument = krate.split("PHOTO{")[1].split("}")[0]
+
+        # if there is comma in the PHOTO{...} argument, it means that the second element is a reaction multiplier
+        # example: PHOTO{H2 -> H + H, 0.5}
+        if "," in photo_argument:
+            reaction_alt = photo_argument.split(",")[0]
+            multiplier = photo_argument.split(",")[1].strip()
+            print("Warning: multiplier '%s' found in PHOTO{...}" % multiplier)
+        else:
+            reaction_alt = photo_argument
+            multiplier = None
+
+        return reaction_alt, multiplier
+
 def parse_xsecs(i, krate, rr_names, pp_names):
     # if krate.split(",")[0].strip() != "PHOTO":
     #     return ""
@@ -408,8 +425,9 @@ def parse_xsecs(i, krate, rr_names, pp_names):
 
     # if the reaction has a PHOTO{...} part, it means that the cross-section file name is different from the default one (which is based on the reaction formula)
     if "PHOTO{" in part:
-        # read the reaction verbatim inside PHOTO{...}
-        reaction_alt = part.split("PHOTO{")[1].split("}")[0]
+
+        reaction_alt, _ = parse_alternate_photo(krate)
+
         # find the reactants and products names from the reaction verbatim
         rr_names_alt = [x.strip() for x in reaction_alt.split(" -> ")[0].split(" + ")]
         pp_names_alt = [x.strip() for x in reaction_alt.split(" -> ")[1].split(" + ")]
@@ -440,7 +458,7 @@ def parse_krate_photo(i, krate, verbatim):
 
     k = "! %s\n" % verbatim
     k += "f(:) = photo_xsecs(:, %d) * kernel\n" % i
-    k += "kall(%d) = sum((f(2:nphoto) + f(1:nphoto-1)) * delta_energy) / 2d0 %s\n\n" % (i, shielding)
+    k += "kall_photo(%d) = sum((f(2:nphoto) + f(1:nphoto-1)) * delta_energy) / 2d0 %s\n\n" % (i, shielding)
 
     return k
 
@@ -486,8 +504,17 @@ def parse_H2diss(i, krate, verbatim):
 
 def parse_krate(i, krate, verbatim, prototype):
     k = "! %s\n" % verbatim
-    if krate.split(",")[0].strip() == "PHOTO":
-        k += "! "
+    if "PHOTO" in krate.split(",")[0].strip():
+
+        smult = ""
+        if "PHOTO{" in krate:
+            _, mult = parse_alternate_photo(krate)
+            if mult is not None:
+                smult = " * %s" % mult
+
+        k += "kall(%d) = kall_photo(%d)%s\n\n" % (i, i, smult)
+        return k
+
     if prototype is not None:
         k += "! "
 

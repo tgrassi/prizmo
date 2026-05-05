@@ -54,4 +54,5 @@ O+ + E -> O [] ftest(Tgas, x, 1d-10) * myvar2
 
 # use a different cross section
 CH -> C + H    [] PHOTO, 1e99
-CO -> C + O    [] PHOTO{CH -> C + H}, 1e99
+#CO -> C + O    [] PHOTO{CH -> C + H}, 1e99
+CO -> C + O    [] PHOTO{CH -> C + H, 0.5}, 1e99
