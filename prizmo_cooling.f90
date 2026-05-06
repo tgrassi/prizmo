@@ -3,9 +3,10 @@ module prizmo_cooling
   use prizmo_cooling_atomic
   use prizmo_cooling_dust
   use prizmo_cooling_chemical
+  use prizmo_cooling_custom
   !! PREPROCESS_USE_MOLECULES
   !! PREPROCESS_END
-  integer,parameter::ncooling=5
+  integer,parameter::ncooling=6
 contains
 
   ! **********************
@@ -40,6 +41,8 @@ contains
     cools(3) = cooling_dust(log_Tgas, log_ngas)
     !! PREPROCESS_MOLECULAR_COOLING
     !! PREPROCESS_END
+
+    cools(6) = cooling_custom(x, fluxes, Tgas, Tdust)
 
   end function cooling_array
 

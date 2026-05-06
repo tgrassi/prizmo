@@ -10,7 +10,7 @@ ifeq "$(wres)" "0"
 	fc = ifx
 	switchOPT = -O3 -g -traceback -xHost -fp-model=precise -fpp
 	#switchOPT += -no-prec-sqrt
-	switchDBG = -O0 -check all -warn all -fpp -save-temps
+	switchDBG = -O0 -check all,nouninit -warn all -fpp -save-temps
 	switchDBG += -fpe0 -u -traceback -warn nounused -g
 	switchDBG += -init=snan,zero,arrays -ftrapuv -check noarg_temp_created $(pragmas)
 	switchOMP = -qopenmp
@@ -69,6 +69,7 @@ objs += prizmo_cooling_CO.o
 objs += prizmo_cooling_atomic.o
 objs += prizmo_cooling_dust.o
 objs += prizmo_cooling_chemical.o
+objs += prizmo_cooling_custom.o
 objs += prizmo_cooling.o
 objs += prizmo_ode.o
 objs += prizmo_attenuate.o

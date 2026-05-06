@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 # import ChiantiPy.core as ch
 from tqdm import tqdm
-from prizmo_commons import idx2sp, kboltzmann, clight, hplanck, print_title, plotOn, sp2spj
+from prizmo_commons import idx2sp, kboltzmann, clight, hplanck, print_title, plotOn, sp2spj, sp2idx
 from prizmo_preprocess import preprocess
 from scipy.interpolate import interp1d
 import sys
@@ -12,11 +12,15 @@ import shutil
 
 def prepare_atomic_cooling(species_indexes, H2_inc, fname="../data/atomic_cooling/krome_data.dat"):
     print_title("atomic cooling")
-    prepare_atomic_cooling_levels(H2_inc, fname=fname)
+    prepare_atomic_cooling_levels(species_indexes, H2_inc, fname=fname)
 
 
-def prepare_atomic_cooling_levels(H2_inc, fname="../data/atomic_cooling/krome_data.dat"):
-    atoms = ["C", "O", "C+", "O+"]
+def prepare_atomic_cooling_levels(species_indexes, H2_inc, fname="../data/atomic_cooling/krome_data.dat"):
+    # these are the default atomic cooling species to preprocess
+    atoms_default = ["C", "O", "C+", "O+"]
+
+    # check within the default list which species are actually in the network, and prepare cooling only for those
+    atoms = [x for x in atoms_default if sp2idx(x) in species_indexes]
 
     funcs = loaders = commons = cool_tot = valloc_init = ""
     cool_arr = "cools(1) = atomic_cooling_H(x, 1d1**log_Tgas)\n"

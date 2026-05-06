@@ -7,6 +7,8 @@ contains
     implicit none
     real*8,intent(in)::x(nspecies), Tgas, Tdust, ntot
     real*8::heat
+    !! PREPROCESS_CUSTOM_VARIABLES
+    !! PREPROCESS_END
 
     heat = 0d0
 

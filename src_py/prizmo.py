@@ -28,14 +28,14 @@ if not cwd.endswith("src_py"):
 
 init()
 
-species_idxs, photo_limits = prizmo_chemistry.prepare(fname=chemNet)
+species_idxs, photo_limits, xsecs_to_load = prizmo_chemistry.prepare(fname=chemNet)
 species_names = [idx2sp(x) for x in species_idxs]
 H2_inc = 'H2' in species_names
 CO_inc = 'CO' in species_names
 
 prizmo_cooling_atomic.prepare_atomic_cooling(species_idxs, H2_inc, fname=atomData)
 
-user_energy = prizmo_photo.prepare(photo_limits, species_idxs)
+user_energy = prizmo_photo.prepare(photo_limits, species_idxs, xsecs_to_load)
 
 prizmo_dust_opacity.prepare(user_energy)
 

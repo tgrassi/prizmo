@@ -56,16 +56,17 @@ def calc_crossSection_Verner(Z, Q, inner=True):
     return E, sigma
 
 # returns the energy bins in eV
-def prepare(photo_limits, species):
+def prepare(photo_limits, species, xsecs_to_load):
 
     print_title("photochemistry")
 
     data_all = dict()
     # Leiden format
     for fname in glob("../data/xsecs/*.dat"):
-        reactant_name = fname.split("/")[-1].split("__")[0]
-        if sp2idx(reactant_name) not in species:
+        verbatim_reaction = fname.split("/")[-1].replace("__", " -> ").replace("_", " + ").replace(".dat", "")
+        if verbatim_reaction.strip() not in xsecs_to_load.split("\n"):
             continue
+        print("Loading cross sections for ", verbatim_reaction)
         header = [x for x in open(fname).read().split("\n") if x.strip().startswith("#")][-1]
         header = header.replace("#", "").split()
         data = np.loadtxt(fname).T
@@ -84,19 +85,19 @@ def prepare(photo_limits, species):
         return plus
 
     for idx in species:
-        spec=idx2sp(idx)
+        spec = idx2sp(idx)
         if not spec.replace('+','') in natom2name.values():
             continue
 
         Z = name2natom[spec.replace('+','')]
         Q = spec.count('+')
-        if Q>=Z:
+        if Q >=Z :
             continue
-        assert Q<Z, "Can't have charge > atomic number"
+        assert Q < Z, "Can't have charge > atomic number"
         N = Z-Q
 
         atom = natom2name[Z] + get_plus(Z - N)
-        assert atom==spec, "Identification of atoms in photoionisation not working"
+        assert atom == spec, "Identification of atoms in photoionisation not working"
         atom_ionized = natom2name[Z] + get_plus(Z - N + 1)
         name_file = "%s__%s_E" % (atom, atom_ionized)
         print("Calculate Verner cross sections for ", name_file)

@@ -33,8 +33,11 @@ def prepare(fname="../networks/test.dat", main=False, speciesList=None):
     prototype_pragma = prototype_define = ""
     in_custom_function = False
     in_custom_variables = False
+    in_custom_cooling = False
     custom_functions = ""
     custom_variables = ""
+    custom_cooling = ""
+    xsecs_to_load = ""
     i = 0
     for line in rows.split("\n"):
 
@@ -49,6 +52,10 @@ def prepare(fname="../networks/test.dat", main=False, speciesList=None):
 
         if line.startswith("VARIABLES{"):
             in_custom_variables = True
+            continue
+
+        if line.startswith("COOLING{"):
+            in_custom_cooling = True
             continue
 
         if line.startswith("DUMMY{"):
@@ -67,6 +74,7 @@ def prepare(fname="../networks/test.dat", main=False, speciesList=None):
                 custom_functions += "\n"
             in_custom_function = False
             in_custom_variables = False
+            in_custom_cooling = False
             continue
 
         if in_custom_function:
@@ -78,7 +86,11 @@ def prepare(fname="../networks/test.dat", main=False, speciesList=None):
                 custom_variables += line + "\n"
             continue
 
-        rr_org, pp_org, krate = parse_line(line)
+        if in_custom_cooling:
+            custom_cooling += line + "\n"
+            continue
+
+        rr_org, pp_org, krate, tmin, tmax = parse_line(line)
         rr = [sp2idx(x) for x in rr_org]
         pp = [sp2idx(x) for x in pp_org]
 
@@ -86,8 +98,9 @@ def prepare(fname="../networks/test.dat", main=False, speciesList=None):
         check_charge_conservation(rr_org, pp_org, verbatim_rate)
 
         fluxes += "flux(%d) = %s\n" % (i + 1, get_rhs(i + 1, rr))
-        rate = parse_krate(i + 1, krate, verbatim_rate, prototype)
+        rate, verbatim_photo = parse_krate(i + 1, krate, verbatim_rate, prototype, tmin, tmax)
         krates += rate
+        xsecs_to_load += verbatim_photo + "\n"
         prototype_vars, prototype_idxs = parse_prototype_rate(rate, prototype, prototype_vars, prototype_idxs, i+1)
         krates_photo += parse_krate_photo(i + 1, krate, verbatim_rate)
         photoheating_rate += parse_photoheating_rate(i + 1, krate, verbatim_rate)
@@ -220,10 +233,12 @@ def prepare(fname="../networks/test.dat", main=False, speciesList=None):
                                            "CUSTOM_VARIABLES": custom_variables})
         preprocess("../prizmo_rates_photo.f90", {"PHOTORATES": krates_photo})
         preprocess("../prizmo_rates_heating.f90", {"PHOTOHEATING_RATE": photoheating_rate})
-        preprocess("../prizmo_heating_photo.f90", {"PHOTOHEATING": photoheating})
+        preprocess("../prizmo_heating_photo.f90", {"PHOTOHEATING": photoheating,
+                                                   "CUSTOM_VARIABLES": custom_variables})
         preprocess("../prizmo_heating_H2diss.f90", {"H2DISS": H2diss})
         preprocess("../prizmo_cooling_chemical.f90", {"RECOMBINATION": recombination_cooling,
                                                       "CHEMICAL": chemical_cooling})
+        preprocess("../prizmo_cooling_custom.f90", {"CUSTOM_COOLING": custom_cooling})
         preprocess("../prizmo_loaders.f90", {"LOAD_XSECS": load_xsecs})
         preprocess("../prizmo_flux.f90", {"FLUXES": fluxes})
         preprocess("../prizmo_attenuate.f90", {"ATTENUATE": attenuate})
@@ -236,7 +251,10 @@ def prepare(fname="../networks/test.dat", main=False, speciesList=None):
 
         open("../runtime_data/energy_thresholds.dat", "w").write(photo_thresholds)
 
-    return species, np.array(photo_limits)
+        while "\n\n" in xsecs_to_load:
+            xsecs_to_load = xsecs_to_load.replace("\n\n", "\n")
+
+    return species, np.array(photo_limits), xsecs_to_load
 
 
 def check_reverse(reactants, products):
@@ -449,9 +467,13 @@ def parse_krate_photo(i, krate, verbatim):
     if "PHOTO" not in krate.split(",")[0].strip():
         return ""
 
-    if verbatim.strip() == "H2 -> H + H":
+    reaction_alt = verbatim
+    if "PHOTO{" in krate:
+        reaction_alt, _ = parse_alternate_photo(krate)
+
+    if "H2 -> H + H" in [verbatim.strip(), reaction_alt.strip()]:
         shielding = " * shielding_H2(log_NH2, log_tgas)"
-    elif verbatim.strip() == "CO -> C + O":
+    elif "CO -> C + O" in [verbatim.strip(), reaction_alt.strip()]:
         shielding = " * shielding_CO(log_NH2, log_NCO)"
     else:
         shielding = ""
@@ -469,28 +491,43 @@ def parse_photoheating_rate(i, krate, verbatim):
     if "PHOTO" not in krate.split(",")[0].strip():
         return ""
 
-    if verbatim.strip() == "H2 -> H + H":
+    reaction_alt = verbatim
+    if "PHOTO{" in krate:
+        reaction_alt, _ = parse_alternate_photo(krate)
+
+    if "H2 -> H + H" in [verbatim.strip(), reaction_alt.strip()]:
         k = "! %s\n" % verbatim
-        k += "! skipped\n"
+        k += "! skipped (see prizmo_heating_H2diss.f90)\n"
         return k
+
+    shielding = ""
+    if "CO -> C + O" in [verbatim.strip(), reaction_alt.strip()]:
+        shielding = " * shielding_CO(log_NH2, log_NCO)"
 
     k = "! %s\n" % verbatim
     k += "f(:) = photo_xsecs(:, %d) * max(energy - energy_threshold(%d), 0d0) * kernel\n" % (i, i)
-    k += "kall_heat(%d) = sum((f(2:nphoto) + f(1:nphoto-1)) * delta_energy) / 2d0\n\n" % i
+    k += "kall_heat(%d) = sum((f(2:nphoto) + f(1:nphoto-1)) * delta_energy) / 2d0%s\n\n" % (i, shielding)
 
     return k
 
 
 def parse_photoheating(i, krate, rr, verbatim):
-    if krate.split(",")[0].strip() != "PHOTO":
+    if "PHOTO" not in krate.split(",")[0].strip():
         return ""
+
+    reaction_alt = verbatim
+    smult = ""
+    if "PHOTO{" in krate:
+        reaction_alt, mult = parse_alternate_photo(krate)
+        if mult is not None:
+            smult = " * %s" % mult
 
     heat = "! %s\n" % verbatim
 
-    if verbatim.strip() == "H2 -> H + H":
+    if "H2 -> H + H" in [verbatim.strip(), reaction_alt.strip()]:
         return "\n"
 
-    heat += "heat = heat + kall_heat(%d) * x(%s)\n" % (i, rr[0])
+    heat += "heat = heat + kall_heat(%d) * x(%s)%s\n" % (i, rr[0], smult)
     return heat
 
 
@@ -502,18 +539,28 @@ def parse_H2diss(i, krate, verbatim):
     return ""
 
 
-def parse_krate(i, krate, verbatim, prototype):
+def parse_krate(i, krate, verbatim, prototype, tmin, tmax):
     k = "! %s\n" % verbatim
-    if "PHOTO" in krate.split(",")[0].strip():
 
+    if prototype is None:
+        if tmin is not None or tmax is not None:
+            k += "kall(%d) = 0d0\n" % i
+        if tmin is not None:
+            k += "if (Tgas >= %s) then\n" % tmin
+        if tmax is not None:
+            k += "if (Tgas < %s) then\n" % tmax
+
+    verbatim_photo = ""
+    if "PHOTO" in krate.split(",")[0].strip():
+        verbatim_photo = verbatim
         smult = ""
         if "PHOTO{" in krate:
-            _, mult = parse_alternate_photo(krate)
+            verbatim_photo, mult = parse_alternate_photo(krate)
             if mult is not None:
                 smult = " * %s" % mult
 
         k += "kall(%d) = kall_photo(%d)%s\n\n" % (i, i, smult)
-        return k
+        return k, verbatim_photo
 
     if prototype is not None:
         k += "! "
@@ -533,9 +580,17 @@ def parse_krate(i, krate, verbatim, prototype):
         else:
             sys.exit("ERRROR: dust reaction uknown " + verbatim)
     else:
-        k += "kall(%d) = %s\n\n" % (i, krate.replace("&", "&\n"))
+        k += "kall(%d) = %s\n" % (i, krate.replace("&", "&\n"))
 
-    return k
+    if prototype is None:
+        if tmin is not None:
+            k += "end if\n"
+        if tmax is not None:
+            k += "end if\n"
+
+    k += "\n"
+
+    return k, verbatim_photo
 
 
 def is_dust_evaporation(verbatim):
@@ -550,10 +605,11 @@ def is_dust_freezing(verbatim):
 
 def parse_line(line):
     line_org = line.strip()
+    tlim = ""
     if "[" in line:
         line = line.replace("[", ";").replace("]", ";").replace("->", ";", 1)
         try:
-            rr, pp, _, kk = line.split(";")
+            rr, pp, tlim, kk = line.split(";")
         except ValueError as e:
             print("Error parsing line: %s" % line_org, e)
             sys.exit(1)
@@ -567,11 +623,21 @@ def parse_line(line):
     rr = parse_species(rr)
     pp = parse_species(pp)
 
+    if tlim.strip() == "":
+        tmin = tmax = None
+    else:
+        tmin, tmax = [x.strip() for x in tlim.split(",")]
+        if tmin == "":
+            tmin = None
+        if tmax == "":
+            tmax = None
+
+
     for ee in ["e", "e-"]:
         rr = ["E" if x == ee else x for x in rr]
         pp = ["E" if x == ee else x for x in pp]
 
-    return rr, pp, kk.strip()
+    return rr, pp, kk.strip(), tmin, tmax
 
 
 def parse_species(specs):
