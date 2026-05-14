@@ -532,7 +532,7 @@ def parse_photoheating(i, krate, rr, verbatim):
 
 
 def parse_H2diss(i, krate, verbatim):
-    if krate.split(",")[0].strip() != "PHOTO":
+    if "PHOTO" not in krate.split(",")[0].strip():
         return ""
     if verbatim.strip() == "H2 -> H + H":
         return "Rdiss = kall(%d)\n" % i
