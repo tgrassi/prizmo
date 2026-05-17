@@ -15,6 +15,7 @@ contains
     real*8::invTgas32, Tgas14, sqrTgas, invTe, invsqrTe
     real*8::Tgas32_m06, Tgas32_m05, Tgas32_m03, Tgas32_m04, invTgas14_065
     real*8::sticking, nu_debye
+    integer::i
 
     !! PREPROCESS_PROTOTYPES_DEFINE
     !! PREPROCESS_END
@@ -51,6 +52,16 @@ contains
 
     !! PREPROCESS_RATES
     !! PREPROCESS_END
+
+    ! do i=1,nreactions
+    !   if (kall(i) < 0d0) then
+    !     print *, 'Negative rate ', i, ': ', kall(i), tgas
+    !     stop
+    !   end if
+    !   if (kall(i) > 1d6) then
+    !     print *, 'Large rate ', i, ': ', kall(i), tgas
+    !   end if
+    ! end do
 
   end subroutine compute_rates
 
