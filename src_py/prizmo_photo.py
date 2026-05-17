@@ -60,6 +60,8 @@ def prepare(photo_limits, species, xsecs_to_load):
 
     print_title("photochemistry")
 
+    xsecs_to_load_list = [x.strip() for x in xsecs_to_load.split("\n") if x.strip() != ""]
+
     data_all = dict()
     # Leiden format
     for fname in glob("../data/xsecs/*.dat"):
