@@ -172,6 +172,25 @@ contains
 
   end subroutine prizmo_set_atol_idx
 
+    ! **************
+  subroutine prizmo_set_rtol_all(val)
+    implicit none
+    real*8,intent(in)::val
+
+    ode_rtol = val
+
+  end subroutine prizmo_set_rtol_all
+
+  ! **************
+  subroutine prizmo_set_rtol_idx(val, idx)
+    implicit none
+    real*8,intent(in)::val
+    integer,intent(in)::idx
+
+    ode_rtol(idx) = val
+
+  end subroutine prizmo_set_rtol_idx
+
   ! **************
   function prizmo_load_radiation_field(filename) result(field)
     implicit none
