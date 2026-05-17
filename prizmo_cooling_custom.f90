@@ -3,9 +3,9 @@ module prizmo_cooling_custom
 contains
 
   ! ***************
-  function cooling_custom(x, fluxes, Tgas, Tdust) result(cool)
+  function cooling_custom(x, Tgas, Tdust) result(cool)
     implicit none
-    real*8,intent(in)::x(nspecies), fluxes(nphoto), Tgas, Tdust
+    real*8,intent(in)::x(nspecies), Tgas, Tdust
     real*8::cool
 
     cool = 0d0
