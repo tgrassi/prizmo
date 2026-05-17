@@ -63,8 +63,13 @@ def prepare(photo_limits, species, xsecs_to_load):
     data_all = dict()
     # Leiden format
     for fname in glob("../data/xsecs/*.dat"):
-        verbatim_reaction = fname.split("/")[-1].replace("__", " -> ").replace("_", " + ").replace(".dat", "")
-        if verbatim_reaction.strip() not in xsecs_to_load.split("\n"):
+        verbatim_reaction = fname.split("/")[-1].replace("__", " -> ")
+        for i in range(10):
+            verbatim_reaction = verbatim_reaction.replace("_" + str(i), "@" + str(i))
+        verbatim_reaction = verbatim_reaction.replace("_", " + ").replace(".dat", "")
+        for i in range(10):
+            verbatim_reaction = verbatim_reaction.replace("@" + str(i), "_" + str(i))
+        if verbatim_reaction.strip() not in xsecs_to_load_list:
             continue
         print("Loading cross sections for ", verbatim_reaction)
         header = [x for x in open(fname).read().split("\n") if x.strip().startswith("#")][-1]
