@@ -42,7 +42,7 @@ contains
     !! PREPROCESS_MOLECULAR_COOLING
     !! PREPROCESS_END
 
-    cools(6) = cooling_custom(x, fluxes, Tgas, Tdust)
+    cools(6) = cooling_custom(x, Tgas, Tdust)
 
   end function cooling_array
 
