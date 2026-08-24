@@ -108,6 +108,25 @@ contains
   end function get_HEnuclei
 
   ! **************************
+  subroutine ranker_idx(array, nbest)
+    implicit none
+    real*8,intent(in):: array(:)
+    integer,intent(in)::nbest
+    integer::idxs(size(array)), i
+    real*8::amax
+
+    idxs = argsort_r(array)
+
+    amax = array(idxs(1))
+
+    print *, "**********************"
+    do i=1,min(nbest, size(array))
+      print '(2I5,2E17.8e3,x,a30)', i, idxs(i), array(idxs(i)), array(idxs(i)) / (amax + 1d-40)
+    end do
+
+  end subroutine ranker_idx
+
+  ! **************************
   subroutine ranker(array, nbest, array_string)
     implicit none
     real*8,intent(in):: array(:)

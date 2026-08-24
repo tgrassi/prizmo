@@ -11,7 +11,7 @@ contains
 
     coola = get_cooling_chemical_array(x, fluxes, Tgas)
 
-    ! call ranker(abs(coola), 5)  ! DEBUG
+    !call ranker_idx(abs(coola), 5)  ! DEBUG
 
     cool = sum(coola)
 

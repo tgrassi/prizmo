@@ -380,6 +380,8 @@ def get_verbatim_rate(rr_names, pp_names):
 def parse_recombination_cooling(i, rr_name, pp_name, verbatim):
     if len(rr_name) != 2:
         return ""
+    if len(pp_name) != 1:
+        return ""
     if "E" not in rr_name:
         return ""
     if "".join(rr_name).count("+") - "".join(pp_name).count("+") != 1:
