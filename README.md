@@ -174,6 +174,7 @@ Message `WARNING: MAXSTEPS with oscillating solution`.
 Ignore, the solver is oscillating around the thermochemical equilibrium, hence it stops the integration earlier to avoid useless calculations.   
 
 ## :bookmark_tabs: How to cite
+If you are using PRIZMO, please cite our two method papers:
 ```
 @ARTICLE{2024A&A...690A.296S,
        author = {{Sellek}, A.~D. and {Grassi}, T. and {Picogna}, G. and {Rab}, Ch. and {Clarke}, C.~J. and {Ercolano}, B.},
